@@ -1,6 +1,7 @@
 # double_double
+[![Build Status](https://secure.travis-ci.org/crftr/double_double.png?branch=master)](http://travis-ci.org/crftr/double_double)
 
-TODO: Write a gem description
+Double accounting 
 
 ## Installation
 
@@ -19,6 +20,10 @@ Or install it yourself as:
 ## Usage
 
 TODO: Write usage instructions here
+
+## Name
+
+The double double is the flagship In-N-Out cheeseburger.  Ask a southern-Californian.
 
 ## Contributing
 
