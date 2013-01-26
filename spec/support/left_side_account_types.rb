@@ -55,10 +55,10 @@ shared_examples "a left side account type" do
       acct1         = FactoryGirl.create(left_side_account_type)
       acct2         = FactoryGirl.create(left_side_account_type)
       other_account = FactoryGirl.create("not_#{left_side_account_type}".to_sym)
-      a1 = rand(1...1_000_000_000)
-      a2 = rand(1...1_000_000_000)
-      a3 = rand(1...1_000_000_000)
-      a4 = rand(1...1_000_000_000)
+      a1 = rand(10..1_000_000_000)
+      a2 = rand(10..1_000_000_000)
+      a3 = rand(10..1_000_000_000)
+      a4 = rand(10..1_000_000_000)
       pid1 = 100
       pid2 = 200
 
