@@ -19,7 +19,13 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency('money', '~> 5.1')
   gem.add_dependency 'activerecord', '~> 3.2.11'
-  gem.add_development_dependency('sqlite3')
+
+  if /jruby/ === $platform.to_s
+    gem.add_development_dependency('jdbc-sqlite3')
+  else
+    gem.add_development_dependency('sqlite3')      
+  end
+  
   gem.add_development_dependency('rspec', '~> 2.12')
   gem.add_development_dependency('factory_girl')
   gem.add_development_dependency('database_cleaner')
