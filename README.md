@@ -1,5 +1,7 @@
 # double_double
 [![Build Status](https://travis-ci.org/crftr/double_double.png)](https://travis-ci.org/crftr/double_double)
+[![Dependency Status](https://gemnasium.com/crftr/double_double.png)](https://gemnasium.com/crftr/double_double)
+[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/crftr/double_double)
 
 A double-entry accounting system.  Likely to change heavily in the coming days.
 

@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :transaction_type, :class => DoubleDouble::TransactionType do |type|
+  factory :transaction_type, class: DoubleDouble::TransactionType do |type|
     type.description  { FactoryGirl.generate(:transaction_type_description) }
     type.number       { FactoryGirl.generate(:transaction_type_number)      }
   end
