@@ -5,6 +5,8 @@ require 'double_double/version'
 
 # Accounts
 require 'double_double/account'
+require 'double_double/left_side_account'
+require 'double_double/right_side_account'
 require 'double_double/asset'
 require 'double_double/equity'
 require 'double_double/expense'
