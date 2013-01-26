@@ -80,6 +80,31 @@ module DoubleDouble
       end
       accounts_balance
     end
-    
+
+    protected
+
+      # Left Side Accounts:
+      # if contra { credits_balance(hash) - debits_balance(hash)  }
+      # else      { debits_balance(hash)  - credits_balance(hash) }
+      #
+      # Right Side Accounts:
+      # if contra { debits_balance(hash)  - credits_balance(hash) }
+      # else      { credits_balance(hash) - debits_balance(hash)  }
+      #
+      # @return [Money] The balance of the account instance
+      def child_account_balance(is_left_side_account, hash = {})
+        if (is_left_side_account && contra) || !(is_left_side_account || contra)
+          credits_balance(hash) - debits_balance(hash)
+        else
+          debits_balance(hash) - credits_balance(hash)
+        end
+      end
   end
 end
+
+
+
+
+
+
+
