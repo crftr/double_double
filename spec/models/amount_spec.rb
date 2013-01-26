@@ -5,6 +5,5 @@ module DoubleDouble
       amount = FactoryGirl.build(:amount)
       amount.should_not be_valid
     end
-
   end
 end

@@ -1,7 +1,7 @@
 # double_double
-[![Build Status](https://secure.travis-ci.org/crftr/double_double.png?branch=master)](http://travis-ci.org/crftr/double_double)
+[![Build Status](https://travis-ci.org/crftr/double_double.png)](https://travis-ci.org/crftr/double_double)
 
-Double accounting 
+A double-entry accounting system.  Likely to change heavily in the coming days.
 
 ## Installation
 
@@ -32,3 +32,7 @@ The double double is the flagship In-N-Out cheeseburger.  Ask a southern-Califor
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Notes
+
+double_double was heavily influenced by mbulat's plutus project and regularly working with quickbooks.

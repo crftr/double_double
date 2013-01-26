@@ -1,3 +1,10 @@
+# The shared behaviors that all account types should exhibit.
+#
+# For clarification, the following will return the class object represented in account_type
+# 
+# @example
+#   account_type = :asset
+#   DoubleDouble.const_get(account_type.to_s.capitalize)  # returns the DoubleDouble::Asset class object
 
 shared_examples "all account types" do
   describe "<<" do
@@ -32,13 +39,11 @@ shared_examples "all account types" do
     it "a contra account should be capable of balancing against a non-contra account" do
       account        = FactoryGirl.create(account_type)
       contra_account = FactoryGirl.create(account_type, :contra => true)
-
       t = FactoryGirl.build(:transaction)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: 50, account: account)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: 25, account: account)
       t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: 75, account: contra_account)
       t.save
-
       DoubleDouble.const_get(@capitalized_account_type).balance.should == 0
     end
   end
