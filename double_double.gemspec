@@ -9,8 +9,8 @@ Gem::Specification.new do |gem|
   gem.authors       = ['Mike Herrera']
   gem.email         = ['git@devoplabs.com']
   gem.description   = %q{A double-entry accural accounting system}
-  gem.summary       = %q{A double-entry accural accounting system. Inspired by mbulat's plutus project.}
-  gem.homepage      = ''
+  gem.summary       = %q{A double-entry accural accounting system. All currency amounts are stored using the Money gem.}
+  gem.homepage      = 'https://github.com/crftr/double_double'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
