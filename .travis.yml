@@ -6,5 +6,5 @@ rvm:
   - rbx-19mode
   - ruby-head
 env:
-  - JRUBY_OPTS="--1.9"
+  - JRUBY_OPTS="--1.9 -Xcext.enabled=true"
 script: rake
