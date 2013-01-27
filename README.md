@@ -7,6 +7,8 @@ A double-entry accounting system.
 
 ## Installation
 
+### Gem
+
 Add this line to your application's Gemfile:
 
     gem 'double_double'
@@ -19,12 +21,15 @@ Or install it yourself as:
 
     $ gem install double_double
 
-As this is a database-backed gem, generate a migration:
+### Database structure
+
+Create the expected database structure.  If using Rails, generate a migration:
 
     $ rails generate migration CreateDoubleDouble
 
 Edit the migration to match:
 
+    ```ruby
     class CreateDoubleDouble < ActiveRecord::Migration
       def change
         create_table :double_double_accounts do |t|
@@ -70,6 +75,11 @@ Edit the migration to match:
         add_index :double_double_amounts, [:transaction_id, :account_id]
       end
     end
+    ```
+
+Rake the new migration
+
+    $ rake db:migrate
 
 ## Usage
 

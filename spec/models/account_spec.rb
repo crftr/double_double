@@ -2,26 +2,26 @@ module DoubleDouble
   describe Account do
 
     it "should not allow creating an account without a subtype" do
-      account = FactoryGirl.build(:account)
+      account = DoubleDouble::Account.new(name: 'Cash', number: 10)
       account.should_not be_valid
     end
 
     it "should be unique per name" do
-      FactoryGirl.create(:asset, :name => "Test1")
-      account = FactoryGirl.build(:asset, :name => "Test1")
+      DoubleDouble::Asset.new(name: 'Petty Cash', number: 10).save
+      account = DoubleDouble::Liability.new(name: 'Petty Cash', number: 11)
       account.should_not be_valid
       account.errors[:name].should == ["has already been taken"]
     end
     
     it "should be unique per number" do
-      FactoryGirl.create(:asset, :number => 88)
-      account = FactoryGirl.build(:asset, :number => 88)
+      DoubleDouble::Asset.new(name: 'Cash', number: 22).save
+      account = DoubleDouble::Liability.new(name: 'Loan', number: 22)
       account.should_not be_valid
       account.errors[:number].should == ["has already been taken"]
     end
 
     it "should not have a balance method" do
-      lambda{Account.balance}.should raise_error(NoMethodError)
+      -> {Account.balance}.should raise_error(NoMethodError)
     end
 
     it "should have a trial balance" do
