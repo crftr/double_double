@@ -7,7 +7,8 @@ module DoubleDouble
   class Amount < ActiveRecord::Base
     self.table_name = 'double_double_amounts'
 
-    attr_accessible :account, :amount, :transaction, :context, :initiator, :accountee
+    attr_accessible :account, :amount, :transaction, :context_id, :context_type, 
+                    :initiator_id, :initiator_type, :accountee_id, :accountee_type, as: :transation_builder
     
     belongs_to :transaction
     belongs_to :account

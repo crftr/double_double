@@ -83,6 +83,8 @@ module DoubleDouble
     end
 
     protected
+      # The balance method that derived Accounts utilize.
+      #
       # Left Side Accounts:
       # if contra { credits_balance(hash) - debits_balance(hash)  }
       # else      { debits_balance(hash)  - credits_balance(hash) }

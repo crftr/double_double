@@ -3,7 +3,7 @@
 [![Dependency Status](https://gemnasium.com/crftr/double_double.png)](https://gemnasium.com/crftr/double_double)
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/crftr/double_double)
 
-A double-entry accounting system.  Likely to change heavily in the coming days.
+A double-entry accounting system.
 
 ## Installation
 
@@ -18,6 +18,58 @@ And then execute:
 Or install it yourself as:
 
     $ gem install double_double
+
+As this is a database-backed gem, generate a migration:
+
+    $ rails generate migration CreateDoubleDouble
+
+Edit the migration to match:
+
+    class CreateDoubleDouble < ActiveRecord::Migration
+      def change
+        create_table :double_double_accounts do |t|
+          t.integer :number,        null: false
+          t.string  :name,          null: false
+          t.string  :type,          null: false
+          t.boolean :contra,        default: false
+        end
+        add_index :double_double_accounts, [:name, :type]
+
+        create_table :double_double_transactions do |t|
+          t.string :description
+          t.references :transaction_type
+          t.timestamps
+        end
+        add_index :double_double_transactions, :transaction_type_id
+
+        create_table :double_double_transaction_types do |t|
+          t.integer :number,        null: false
+          t.string :description,    null: false
+        end
+        add_index :double_double_transaction_types, :number
+
+        create_table :double_double_amounts do |t|
+          t.string :type
+          t.references :account
+          t.references :transaction
+          t.references :context,    polymorphic: true
+          t.references :initiator,  polymorphic: true
+          t.references :accountee,  polymorphic: true
+          
+          t.integer :amount_cents, limit: 8, default: 0, null: false
+          t.string  :currency
+        end
+        add_index :double_double_amounts, :context_id
+        add_index :double_double_amounts, :context_type
+        add_index :double_double_amounts, :initiator_id
+        add_index :double_double_amounts, :initiator_type
+        add_index :double_double_amounts, :accountee_id
+        add_index :double_double_amounts, :accountee_type
+        add_index :double_double_amounts, :type
+        add_index :double_double_amounts, [:account_id, :transaction_id]
+        add_index :double_double_amounts, [:transaction_id, :account_id]
+      end
+    end
 
 ## Usage
 

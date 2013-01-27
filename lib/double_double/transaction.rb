@@ -29,8 +29,8 @@ module DoubleDouble
 
     has_many :credit_amounts
     has_many :debit_amounts
-    has_many :credit_accounts, :through => :credit_amounts, :source => :account
-    has_many :debit_accounts,  :through => :debit_amounts,  :source => :account
+    has_many :credit_accounts, through: :credit_amounts, source: :account
+    has_many :debit_accounts,  through: :debit_amounts,  source: :account
 
     validates_presence_of :description
     validate :has_credit_amounts?
@@ -45,27 +45,34 @@ module DoubleDouble
     #   transaction = DoubleDouble::Transaction.build(
     #     description: "Sold some widgets",
     #     debits: [
-    #       {account: "Accounts Receivable", amount: 50}], 
+    #       {account: "Accounts Receivable", amount: 50, context_id: 20, context_type: 'Job'}], 
     #     credits: [
-    #       {account: "Sales Revenue", amount: 45},
-    #       {account: "Sales Tax Payable", amount: 5}])
+    #       {account: "Sales Revenue",       amount: 45},
+    #       {account: "Sales Tax Payable",   amount:  5}])
     #
     # @return [DoubleDouble::Transaction] A Transaction with built credit and debit objects ready for saving
     def self.build(hash)
       t = Transaction.new(description: hash[:description])
       hash[:debits].each do |debit|
         new_debit_amount = prepare_amount_parameters debit.merge!({transaction: t})
-        t.debit_amounts << DebitAmount.new(new_debit_amount)
+        new_amount = DebitAmount.new
+        new_amount.assign_attributes(new_debit_amount, as: :transation_builder)
+        t.debit_amounts << new_amount
       end
       hash[:credits].each do |credit|
         new_credit_amount = prepare_amount_parameters credit.merge!({transaction: t})
-        t.credit_amounts << CreditAmount.new(new_credit_amount)
+        new_amount = CreditAmount.new
+        new_amount.assign_attributes(new_credit_amount, as: :transation_builder)
+        t.credit_amounts << new_amount
       end
       t.transaction_type = hash[:transaction_type] if hash.has_key?(:transaction_type)
       t
     end
 
     private
+
+      # Validation
+      
       def has_credit_amounts?
         errors[:base] << "Transaction must have at least one credit amount" if self.credit_amounts.blank?
       end
@@ -84,22 +91,27 @@ module DoubleDouble
         credit_amount_total - debit_amount_total
       end
 
+      # Assist transaction building
+
       def self.prepare_amount_parameters args
         prepared_params = { account: Account.find_by_name(args[:account]), transaction: args[:transaction], amount: args[:amount]}
-        
-        args_keys = args.keys
-        if (args_keys & [:context_id, :context_type]).count == 2
-          prepared_params.merge!({context_id: args[:context_id], context_type: args[:context_type]})
-        end
-        
-        if (args_keys & [:initiator_id, :initiator_type]).count == 2
-          prepared_params.merge!({initiator_id: args[:initiator_id], initiator_type: args[:initiator_type]})
-        end
 
-        if (args_keys & [:accountee_id, :accountee_type]).count == 2
-          prepared_params.merge!({accountee_id: args[:accountee_id], accountee_type: args[:accountee_type]})
+        polymorphic_sets = [[:context_id, :context_type], [:initiator_id, :initiator_type], [:accountee_id, :accountee_type]]
+        polymorphic_sets.each do |polymorphic_set|
+          prepared_params.merge!(hash_parameters_if_they_all_exist(polymorphic_set, args))
         end
         prepared_params
+      end
+
+      # Verify that polymorphic associations are only written if both ID and TYPE are present.
+      def self.hash_parameters_if_they_all_exist(keys_to_check_for, hash_to_check_against)
+        return_hash = {}
+        if (hash_to_check_against.keys & keys_to_check_for).count == keys_to_check_for.count
+          keys_to_check_for.each do |param|
+            return_hash[param] = hash_to_check_against[param]
+          end
+        end
+        return_hash
       end
   end
 end

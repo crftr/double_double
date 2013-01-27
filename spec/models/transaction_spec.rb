@@ -65,22 +65,45 @@ module DoubleDouble
       t.errors['base'].should == ["The credit and debit amounts are not equal"]
     end
 
-    it "should allow building a transaction and credit and debits with a hash" do
-      FactoryGirl.create(:asset, :name => "Accounts Receivable")
-      FactoryGirl.create(:revenue, :name => "Sales Revenue")
-      FactoryGirl.create(:liability, :name =>  "Sales Tax Payable")
-      transaction = Transaction.build(
-        description: "Sold some widgets",
-        debits: [
-          {account: "Accounts Receivable", amount: 50}], 
-        credits: [
-          {account: "Sales Revenue", amount: 45},
-          {account: "Sales Tax Payable", amount: 5}])
+    describe "the build class method" do
 
-      transaction.should be_valid
-      transaction.save
-      saved_transaction = DoubleDouble::Transaction.find(transaction.id)
+      before(:each) do
+        @ar = FactoryGirl.create(:asset, :name => "Accounts Receivable")
+        FactoryGirl.create(:revenue, :name => "Sales Revenue")
+        FactoryGirl.create(:liability, :name =>  "Sales Tax Payable")
+        FactoryGirl.create(:liability, :name =>  "Deposits")
+      end
+
+      it "should allow a transaction to be built describing the credit and debit_amounts with the MINIMAL hash" do
+        transaction = Transaction.build(
+          description: "Sold some widgets",
+          debits: [
+            {account: "Accounts Receivable", amount: 50}], 
+          credits: [
+            {account: "Sales Revenue",                    amount: 45},
+            {account: "Sales Tax Payable",                amount:  5}])
+
+        transaction.should be_valid
+      end
+
+      it "should allow a transaction to be built describing the context in the hash" do
+        transaction = Transaction.build(
+          description: "Sold some widgets",
+          debits: [
+            {account: "Accounts Receivable", amount: 60,            context_id: 55, context_type: 'Campaign'},
+            {account: "Accounts Receivable", amount: 40,            context_id: 66, context_type: 'Campaign'}], 
+          credits: [
+            {account: "Sales Revenue",                  amount: 45},
+            {account: "Sales Tax Payable",              amount:  5},
+            {account: "Deposits",                       amount: 50, context_id: 55, context_type: 'Campaign'}])
+
+        transaction.should be_valid
+        transaction.save
+        Amount.by_context(55, 'Campaign').count.should eq(2)
+        Amount.by_context(66, 'Campaign').count.should eq(1)
+        @ar.debits_balance(context_id: 55, context_type: 'Campaign').should eq(60)
+        @ar.debits_balance(context_id: 66, context_type: 'Campaign').should eq(40)
+      end
     end
-
   end
 end
