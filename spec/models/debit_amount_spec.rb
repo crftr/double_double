@@ -19,28 +19,28 @@ module DoubleDouble
       debit_amount.should_not be_valid
     end
     
-    it "should be sensitive to project_id when calculating balances, if supplied" do
+    it "should be sensitive to context_id when calculating balances, if supplied" do
       acct_1     = FactoryGirl.create(:asset)
       other_acct = FactoryGirl.create(:not_asset)
       t = FactoryGirl.build(:transaction)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(123), account: acct_1, project_id: 77)
+      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(123), account: acct_1, context_id: 77, context_type: 'Job')
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(123), account: other_acct)
       t.save
       t = FactoryGirl.build(:transaction)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(321), account: acct_1, project_id: 77)
+      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(321), account: acct_1, context_id: 77, context_type: 'Job')
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(321), account: other_acct)
       t.save
       t = FactoryGirl.build(:transaction)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(275), account: acct_1, project_id: 82)
+      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(275), account: acct_1, context_id: 82, context_type: 'Job')
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(275), account: other_acct)
       t.save
       t = FactoryGirl.build(:transaction)
       t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(999), account: acct_1)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(999), account: other_acct)
       t.save
-      acct_1.debits_balance({project_id: 77}).should == Money.new(123 + 321)
-      acct_1.debits_balance({project_id: 82}).should == Money.new(275)
-      acct_1.debits_balance.should                   == Money.new(123 + 321 + 275 + 999)
+      acct_1.debits_balance({context_id: 77, context_type: 'Job'}).should == Money.new(123 + 321)
+      acct_1.debits_balance({context_id: 82, context_type: 'Job'}).should == Money.new(275)
+      acct_1.debits_balance.should == Money.new(123 + 321 + 275 + 999)
     end
   end
 end

@@ -10,23 +10,18 @@ ActiveRecord::Migration.verbose = false
 @migration  = Class.new(ActiveRecord::Migration) do
   def change
     create_table :double_double_accounts do |t|
-      t.integer :number,       null: false
-      t.string :name
-      t.string :type
-      t.boolean :contra
-
-      t.timestamps
+      t.integer :number,        null: false
+      t.string  :name,          null: false
+      t.string  :type,          null: false
+      t.boolean :contra,        default: false
     end
     add_index :double_double_accounts, [:name, :type]
 
     create_table :double_double_transactions do |t|
       t.string :description
-      t.integer :commercial_document_id
-      t.string :commercial_document_type
       t.references :transaction_type
       t.timestamps
     end
-    add_index :double_double_transactions, [:commercial_document_id, :commercial_document_type], :name => "index_transactions_on_commercial_doc"
     add_index :double_double_transactions, :transaction_type_id
 
     create_table :double_double_transaction_types do |t|
@@ -39,15 +34,19 @@ ActiveRecord::Migration.verbose = false
       t.string :type
       t.references :account
       t.references :transaction
-      t.references :project
-      t.references :approving_user
-      t.references :targeted_user
-      t.integer :amount_cents, :limit => 8, :default => 0, :null => false
+      t.references :context,    polymorphic: true
+      t.references :initiator,  polymorphic: true
+      t.references :accountee,  polymorphic: true
+      
+      t.integer :amount_cents, limit: 8, default: 0, null: false
       t.string  :currency
-    end 
-    add_index :double_double_amounts, :project_id
-    add_index :double_double_amounts, :approving_user_id
-    add_index :double_double_amounts, :targeted_user_id
+    end
+    add_index :double_double_amounts, :context_id
+    add_index :double_double_amounts, :context_type
+    add_index :double_double_amounts, :initiator_id
+    add_index :double_double_amounts, :initiator_type
+    add_index :double_double_amounts, :accountee_id
+    add_index :double_double_amounts, :accountee_type
     add_index :double_double_amounts, :type
     add_index :double_double_amounts, [:account_id, :transaction_id]
     add_index :double_double_amounts, [:transaction_id, :account_id]

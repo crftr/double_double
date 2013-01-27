@@ -65,36 +65,21 @@ module DoubleDouble
       t.errors['base'].should == ["The credit and debit amounts are not equal"]
     end
 
-    it "should have a polymorphic commercial document associations" do
-      mock_document = FactoryGirl.create(:asset) # one would never do this, but it allows us to not require a migration for the test
-
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(123), account: @acct)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(123), account: @other_acct)
-      t.commercial_document = mock_document
-      t.save
-
-      saved_transaction = Transaction.find(t.id)
-      saved_transaction.commercial_document.should == mock_document
-    end
-
     it "should allow building a transaction and credit and debits with a hash" do
       FactoryGirl.create(:asset, :name => "Accounts Receivable")
       FactoryGirl.create(:revenue, :name => "Sales Revenue")
       FactoryGirl.create(:liability, :name =>  "Sales Tax Payable")
-      mock_document = FactoryGirl.create(:asset)
       transaction = Transaction.build(
         description: "Sold some widgets",
-        commercial_document: mock_document,
         debits: [
           {account: "Accounts Receivable", amount: 50}], 
         credits: [
           {account: "Sales Revenue", amount: 45},
           {account: "Sales Tax Payable", amount: 5}])
+
       transaction.should be_valid
       transaction.save
       saved_transaction = DoubleDouble::Transaction.find(transaction.id)
-      saved_transaction.commercial_document.should == mock_document
     end
 
   end

@@ -59,19 +59,19 @@ shared_examples "a left side account type" do
       a2 = rand(1_000_000_000)
       a3 = rand(1_000_000_000)
       a4 = rand(1_000_000_000)
-      pid1 = 100
-      pid2 = 200
+      context_id_1 = 100
+      context_id_2 = 200
 
       t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a1), account: acct1, project_id: pid1)
+      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a1), account: acct1, context_id: context_id_1, context_type: 'Job')
       t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a1), account: other_account)
       t.save
       t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a2), account: acct1, project_id: pid1)
+      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a2), account: acct1, context_id: context_id_1, context_type: 'Job')
       t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a2), account: other_account)
       t.save
       t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: acct1, project_id: pid2)
+      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: acct1, context_id: context_id_2, context_type: 'Job')
       t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: other_account)
       t.save
       t = FactoryGirl.build(:transaction)
@@ -81,15 +81,15 @@ shared_examples "a left side account type" do
 
       t = FactoryGirl.build(:transaction)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a4), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a4), account: acct1, project_id: pid1)
+      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a4), account: acct1, context_id: context_id_1, context_type: 'Job')
       t.save
       t = FactoryGirl.build(:transaction)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a2), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a2), account: acct1, project_id: pid1)
+      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a2), account: acct1, context_id: context_id_1, context_type: 'Job')
       t.save
       t = FactoryGirl.build(:transaction)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: acct1, project_id: pid2)
+      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: acct1, context_id: context_id_2, context_type: 'Job')
       t.save
       t = FactoryGirl.build(:transaction)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: other_account)
@@ -98,27 +98,27 @@ shared_examples "a left side account type" do
 
       t = FactoryGirl.build(:transaction)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a4), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a4), account: acct2, project_id: pid1)
+      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a4), account: acct2, context_id: context_id_1, context_type: 'Job')
       t.save
       t = FactoryGirl.build(:transaction)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a2), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a2), account: acct2, project_id: pid1)
+      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a2), account: acct2, context_id: context_id_1, context_type: 'Job')
       t.save
       t = FactoryGirl.build(:transaction)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: acct2, project_id: pid2)
+      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: acct2, context_id: context_id_2, context_type: 'Job')
       t.save
       t = FactoryGirl.build(:transaction)
       t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: other_account)
       t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: acct2)
       t.save
 
-      acct1.balance({project_id: pid1}).should == Money.new((a4 + a2) - (a1 + a2))
-      acct1.balance({project_id: pid2}).should == Money.new(a3 - a3)
+      acct1.balance({context_id: context_id_1, context_type: 'Job'}).should == Money.new((a4 + a2) - (a1 + a2))
+      acct1.balance({context_id: context_id_2, context_type: 'Job'}).should == Money.new(a3 - a3)
       acct1.balance.should                     == Money.new((a4 + a2 + a3 + a3) - (a1 + a2 + a3 + a3))
       
-      acct2.balance({project_id: pid1}).should == Money.new((a4 + a2))
-      acct2.balance({project_id: pid2}).should == Money.new(a3)
+      acct2.balance({context_id: context_id_1, context_type: 'Job'}).should == Money.new((a4 + a2))
+      acct2.balance({context_id: context_id_2, context_type: 'Job'}).should == Money.new(a3)
       acct2.balance.should                     == Money.new((a4 + a2 + a3 + a3))
     end
   end

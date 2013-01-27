@@ -13,7 +13,7 @@ module DoubleDouble
   # normal balance swapped. For example, to remove equity, a "Drawing" account may be created
   # as a contra equity account as follows:
   #
-  #   DoubleDouble::Equity.create(:name => "Drawing", contra => true)
+  #   DoubleDouble::Equity.create(name: "Drawing", number: 2002, contra: true)
   #
   # At all times the balance of all accounts should conform to the "accounting equation"
   #   DoubleDouble::Assets = Liabilties + Owner's Equity
@@ -35,18 +35,19 @@ module DoubleDouble
     
     has_many :credit_amounts
     has_many :debit_amounts
-    has_many :credit_transactions, :through => :credit_amounts, :source => :transaction
-    has_many :debit_transactions, :through => :debit_amounts, :source => :transaction
+    has_many :credit_transactions, through: :credit_amounts, source: :transaction
+    has_many :debit_transactions,  through: :debit_amounts,  source: :transaction
 
     validates_presence_of :type, :name, :number
     validates_uniqueness_of :name, :number
 
     def side_balance(is_debit, hash)
+      hash_keys = hash.keys
       a = is_debit ? DoubleDouble::DebitAmount.scoped : DoubleDouble::CreditAmount.scoped
       a = a.where(account_id: self.id)
-      a = a.by_project_id( hash[:project_id] )               if hash.has_key?(:project_id)
-      a = a.by_approving_user_id( hash[:approving_user_id] ) if hash.has_key?(:approving_user_id)
-      a = a.by_targeted_user_id( hash[:targeted_user_id] )   if hash.has_key?(:targeted_user_id)
+      a = a.by_context(hash[:context_id], hash[:context_type])       if (hash_keys & [:context_id, :context_type]).count == 2
+      a = a.by_initiator(hash[:initiator_id], hash[:initiator_type]) if (hash_keys & [:initiator_id, :initiator_type]).count == 2
+      a = a.by_accountee(hash[:accountee_id], hash[:accountee_type]) if (hash_keys & [:accountee_id, :accountee_type]).count == 2
       Money.new(a.sum(:amount_cents))
     end
     
@@ -82,7 +83,6 @@ module DoubleDouble
     end
 
     protected
-
       # Left Side Accounts:
       # if contra { credits_balance(hash) - debits_balance(hash)  }
       # else      { debits_balance(hash)  - credits_balance(hash) }
