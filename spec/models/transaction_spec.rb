@@ -2,108 +2,137 @@ module DoubleDouble
   describe Transaction do
 
     before(:each) do
-      @acct       = FactoryGirl.create(:asset)
-      @other_acct = FactoryGirl.create(:not_asset)
+      @cash = DoubleDouble::Asset.create!(name:'Cash', number: 11)
+      @loan = DoubleDouble::Liability.create!(name:'Loan', number: 12)
     end
 
-    it "should create a transaction" do
+    it 'should create a transaction using the create! method' do
       -> {
-        t = FactoryGirl.build(:transaction)
-        t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(123), account: @acct)
-        t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(123), account: @other_acct)
-        t.save!
+        Transaction.create!(
+          description: 'spec transaction 01',
+          debits:  [{account: 'Cash', amount: 10}],
+          credits: [{account: 'Loan', amount:  9},
+                    {account: 'Loan', amount:  1}])
       }.should change(DoubleDouble::Transaction, :count).by(1)
     end
 
-    it "should not be valid without a credit amount" do
-      t = FactoryGirl.build(:transaction)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(123), account: @other_acct)
-      t.should_not be_valid
-      t.errors['base'].should include("Transaction must have at least one credit amount")
+    it 'should not create a transaction using the build method' do
+      -> {
+        Transaction.build(
+          description: 'spec transaction 01',
+          debits:  [{account: 'Cash', amount: 100_000}],
+          credits: [{account: 'Loan', amount: 100_000}])
+      }.should change(DoubleDouble::Transaction, :count).by(0)
     end
 
-    it "should not be valid with an invalid credit amount" do
+    it 'should not be valid without a credit amount' do
+      # No credit_amount element
+      t1 = Transaction.build(
+        description: 'spec transaction 01',
+        debits:  [{account: 'Cash', amount: 100_000}])
+      t1.should_not be_valid
+      t1.errors['base'].should include('Transaction must have at least one credit amount')
+      t1.errors['base'].should include('The credit and debit amounts are not equal')
+      # An empty credit_amount element
+      t2 = Transaction.build(
+        description: 'spec transaction 01',
+        debits:  [{account: 'Cash', amount: 100_000}],
+        credits: [])
+      t2.should_not be_valid
+      t2.errors['base'].should include('Transaction must have at least one credit amount') 
+      t2.errors['base'].should include('The credit and debit amounts are not equal')
+    end
+
+    it 'should raise a RecordInvalid without a credit amount' do
       -> {
-        t = FactoryGirl.build(:transaction)
-        t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: nil,            account: @acct)
-        t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(123), account: @other_acct)
-        t.save
+      Transaction.create!(
+        description: 'spec transaction 01',
+        debits:  [{account: 'Cash', amount: 100_000}],
+        credits: [])
+      }.should raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it 'should not be valid with an invalid credit amount' do
+      -> {
+        Transaction.create!(
+          description: 'spec transaction 01',
+          credits: [{account: 'Loan', amount: nil}],
+          debits:  [{account: 'Cash', amount: 100_000}])
       }.should raise_error(ArgumentError)
     end
 
-    it "should not be valid without a debit amount" do
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(123), account: @acct)
-      t.should_not be_valid
-      t.errors['base'].should include("Transaction must have at least one debit amount")
+    it 'should not be valid without a debit amount' do
+      # No credit_amount element
+      t1 = Transaction.build(
+        description: 'spec transaction 01',
+        credits:  [{account: 'Loan', amount: 100_000}])
+      t1.should_not be_valid
+      t1.errors['base'].should include('Transaction must have at least one debit amount')
+      t1.errors['base'].should include('The credit and debit amounts are not equal')
+      # An empty credit_amount element
+      t2 = Transaction.build(
+        description: 'spec transaction 01',
+        credits: [{account: 'Loan', amount: 100_000}],
+        debits:  [])
+      t2.should_not be_valid
+      t2.errors['base'].should include('Transaction must have at least one debit amount')
+      t2.errors['base'].should include('The credit and debit amounts are not equal')
     end
 
-    it "should not be valid with an invalid debit amount" do
+    it 'should not be valid with an invalid debit amount' do
       -> {
-        t = FactoryGirl.build(:transaction)
-        t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(123), account: @acct)
-        t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: nil,            account: @other_acct)
-        t.save
+        Transaction.create!(
+          description: 'spec transaction 01',
+          credits: [{account: 'Cash', amount: 100_000}],
+          debits:  [{account: 'Loan', amount: nil}])
       }.should raise_error(ArgumentError)
     end
 
-    it "should not be valid without a description" do
-      t = FactoryGirl.build(:transaction, description: nil)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(123), account: @acct)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(123), account: @other_acct)
-      t.save
+    it 'should not be valid without a description' do
+      t = Transaction.build(
+          description: '',
+          debits:  [{account: 'Cash', amount: 100_000}],
+          credits: [{account: 'Loan', amount: 100_000}])
       t.should_not be_valid
       t.errors[:description].should == ["can't be blank"]
     end
 
-    it "should require the debit and credit amounts to cancel" do
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(555), account: @acct)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(666), account: @other_acct)
-      t.save
+    it 'should require the debit and credit amounts to cancel' do
+      t = Transaction.build(
+        description: 'spec transaction 01',
+        credits: [{account: 'Cash', amount: 100_000}],
+        debits:  [{account: 'Loan', amount:  99_999}])
       t.should_not be_valid
-      t.errors['base'].should == ["The credit and debit amounts are not equal"]
+      t.errors['base'].should == ['The credit and debit amounts are not equal']
     end
 
-    describe "the build class method" do
-
-      before(:each) do
-        @ar = FactoryGirl.create(:asset, :name => "Accounts Receivable")
-        FactoryGirl.create(:revenue, :name => "Sales Revenue")
-        FactoryGirl.create(:liability, :name =>  "Sales Tax Payable")
-        FactoryGirl.create(:liability, :name =>  "Deposits")
-      end
-
-      it "should allow a transaction to be built describing the credit and debit_amounts with the MINIMAL hash" do
-        transaction = Transaction.build(
-          description: "Sold some widgets",
-          debits: [
-            {account: "Accounts Receivable", amount: 50}], 
-          credits: [
-            {account: "Sales Revenue",                    amount: 45},
-            {account: "Sales Tax Payable",                amount:  5}])
-
-        transaction.should be_valid
-      end
-
-      it "should allow a transaction to be built describing the context in the hash" do
-        transaction = Transaction.build(
-          description: "Sold some widgets",
-          debits: [
-            {account: "Accounts Receivable", amount: 60,            context_id: 55, context_type: 'Campaign'},
-            {account: "Accounts Receivable", amount: 40,            context_id: 66, context_type: 'Campaign'}], 
-          credits: [
-            {account: "Sales Revenue",                  amount: 45},
-            {account: "Sales Tax Payable",              amount:  5},
-            {account: "Deposits",                       amount: 50, context_id: 55, context_type: 'Campaign'}])
-
-        transaction.should be_valid
-        transaction.save
+    describe 'context references' do
+      it 'should allow a transaction to be built describing the context in the hash' do
+        Transaction.create!(
+          description: 'Sold some widgets',
+          debits:  [{account: 'Cash', amount: 60, context_id: 55, context_type: 'Campaign'},
+                    {account: 'Cash', amount: 40, context_id: 66, context_type: 'Campaign'}], 
+          credits: [{account: 'Loan', amount: 45},
+                    {account: 'Loan', amount:  5},
+                    {account: 'Loan', amount: 50, context_id: 55, context_type: 'Campaign'}])
         Amount.by_context(55, 'Campaign').count.should eq(2)
         Amount.by_context(66, 'Campaign').count.should eq(1)
-        @ar.debits_balance(context_id: 55, context_type: 'Campaign').should eq(60)
-        @ar.debits_balance(context_id: 66, context_type: 'Campaign').should eq(40)
+        @cash.debits_balance(context_id: 55, context_type: 'Campaign').should eq(60)
+        @cash.debits_balance(context_id: 66, context_type: 'Campaign').should eq(40)
       end
+
+      it 'should not create a context association unless both ID and TYPE are present' do
+        Transaction.create!(
+          description: 'Sold some widgets',
+          debits:  [{account: 'Cash', amount: 60, context_id:  55, context_type: nil},
+                    {account: 'Cash', amount: 40, context_id: nil, context_type: 'Campaign'}], 
+          credits: [{account: 'Loan', amount: 45},
+                    {account: 'Loan', amount:  5},
+                    {account: 'Loan', amount: 50, context_id:  55, context_type: 'Campaign'}])
+        Amount.by_context(55, 'Campaign').count.should eq(1)
+        Amount.by_context(66, 'Campaign').count.should eq(0)
+        @cash.debits_balance(context_id: 55, context_type: 'Campaign').should eq(0)
+      end      
     end
   end
 end

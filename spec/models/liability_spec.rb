@@ -10,7 +10,8 @@ module DoubleDouble
     end
 
     it "should create a proper Liability account" do
-      pending
+      -> { DoubleDouble::Liability.create! name: 'Liability acct', number: 20
+      }.should change(DoubleDouble::Liability, :count).by(1)
     end
   end
 end

@@ -14,7 +14,8 @@ shared_examples "all account types" do
     end
 
     it "should allow creating an account" do
-      -> { account = FactoryGirl.create(account_type) }.should change(DoubleDouble::Account, :count).by(1)
+      -> { DoubleDouble.const_get(@capitalized_account_type).create! name: 'test acct', number: 2
+      }.should change(DoubleDouble::Account, :count).by(1)
     end
 
     it "should not report a trial balance" do

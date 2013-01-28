@@ -31,39 +31,37 @@ module DoubleDouble
 
     it "should report a trial balance of 0 with correct transactions (with a contrived example of transactions)" do
       # credit accounts
-      liability      = FactoryGirl.create(:liability)
-      equity         = FactoryGirl.create(:equity)
-      revenue        = FactoryGirl.create(:revenue)
-      contra_asset   = FactoryGirl.create(:asset, :contra => true)
-      contra_expense = FactoryGirl.create(:expense, :contra => true)
+      FactoryGirl.create(:liability, name: 'liability acct')
+      FactoryGirl.create(:equity,    name: 'equity acct')
+      FactoryGirl.create(:revenue,   name: 'revenue acct')
+      FactoryGirl.create(:asset,     name: 'contra asset acct',   :contra => true)
+      FactoryGirl.create(:expense,   name: 'contra expense acct', :contra => true)
       # debit accounts
-      asset            = FactoryGirl.create(:asset)
-      expense          = FactoryGirl.create(:expense)
-      contra_liability = FactoryGirl.create(:liability, :contra => true)
-      contra_equity    = FactoryGirl.create(:equity, :contra => true)
-      contra_revenue   = FactoryGirl.create(:revenue, :contra => true)
-
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: 100_000, account: liability)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: 100_000, account: asset)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: 1_000, account: equity)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: 1_000, account: expense)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: 40_404, account: revenue)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: 40_404, account: contra_liability)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: 2, account: contra_asset)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: 2, account: contra_equity)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: 333, account: contra_expense)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: 333, account: contra_revenue)
-      t.save
-
+      FactoryGirl.create(:asset,     name: 'asset acct')
+      FactoryGirl.create(:expense,   name: 'expense acct')
+      FactoryGirl.create(:liability, name: 'contra liability acct', :contra => true)
+      FactoryGirl.create(:equity,    name: 'contra equity acct',    :contra => true)
+      FactoryGirl.create(:revenue,   name: 'contra revenue acct',   :contra => true)
+      Transaction.create!(
+        description: 'spec transaction 01',
+        debits:  [{account: 'liability acct', amount: 100_000}],
+        credits: [{account: 'asset acct',     amount: 100_000}])
+      Transaction.create!(
+        description: 'spec transaction 02',
+        debits:  [{account: 'equity acct',  amount: 1_000}],
+        credits: [{account: 'expense acct', amount: 1_000}])
+      Transaction.create!(
+        description: 'spec transaction 03',
+        debits:  [{account: 'revenue acct',          amount: 40_404}],
+        credits: [{account: 'contra liability acct', amount: 40_404}])
+      Transaction.create!(
+        description: 'spec transaction 04',
+        debits:  [{account: 'contra asset acct',  amount: 2}], 
+        credits: [{account: 'contra equity acct', amount: 2}])
+      Transaction.create!(
+        description: 'spec transaction 05',
+        debits:  [{account: 'contra expense acct', amount: 333}], 
+        credits: [{account: 'contra revenue acct', amount: 333}])
       Account.trial_balance.should == 0
     end
   end

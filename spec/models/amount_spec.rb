@@ -2,7 +2,8 @@ module DoubleDouble
   describe Amount do
 
     it "should not allow creating an amount without a subtype" do
-      amount = FactoryGirl.build(:amount)
+      cash = DoubleDouble::Asset.create!(name:'Cash', number: 11)
+      amount = DoubleDouble::Amount.new(amount: 50, account: cash)
       amount.should_not be_valid
     end
   end

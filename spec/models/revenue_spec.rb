@@ -8,5 +8,10 @@ module DoubleDouble
     it_behaves_like "a right side account type" do
       let(:right_side_account_type) {:revenue}
     end
+
+    it "should create a proper Revenue account" do
+      -> { DoubleDouble::Revenue.create! name: 'Revenue acct', number: 20
+      }.should change(DoubleDouble::Revenue, :count).by(1)
+    end
   end
 end

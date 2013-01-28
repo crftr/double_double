@@ -55,9 +55,14 @@ module DoubleDouble
       t = Transaction.new()
       t.description      = args[:description]
       t.transaction_type = args[:transaction_type] if args.has_key?(:transaction_type)
-      add_amounts_to_transaction(args[:debits],  t, true)
+      add_amounts_to_transaction(args[:debits],  t, true) 
       add_amounts_to_transaction(args[:credits], t, false)
       t
+    end
+
+    def self.create! args
+      t = build args
+      t.save!
     end
 
     private
@@ -85,6 +90,7 @@ module DoubleDouble
       # Assist transaction building
 
       def self.add_amounts_to_transaction amounts, transaction, add_to_debit_side = true
+        return if amounts.nil? || amounts.count == 0
         amounts.each do |amt|
           amount_parameters = prepare_amount_parameters amt.merge!({transaction: transaction})
           new_amount = add_to_debit_side ? DebitAmount.new : CreditAmount.new
