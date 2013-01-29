@@ -1,5 +1,4 @@
 # Liability, Equity, and Revenue account types
-
 shared_examples "a normal credit account type" do
   describe "<<" do
     

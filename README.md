@@ -135,7 +135,7 @@ TODO: Transaction basics
 TODO: Amount basics
 TODO: Accountees
 TODO: Contexts
-TODO: Initiated by
+TODO: Initiated_by
 
 ## Example Scenarios
 
