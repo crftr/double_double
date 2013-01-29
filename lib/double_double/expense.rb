@@ -6,6 +6,6 @@ module DoubleDouble
   #
   # @see http://en.wikipedia.org/wiki/Expense Expenses
   #
-  class Expense < LeftSideAccount
+  class Expense < NormalDebitAccount
   end
 end

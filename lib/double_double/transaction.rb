@@ -89,14 +89,14 @@ module DoubleDouble
 
       # Assist transaction building
 
-      def self.add_amounts_to_transaction amounts, transaction, add_to_debit_side = true
+      def self.add_amounts_to_transaction amounts, transaction, add_to_debits = true
         return if amounts.nil? || amounts.count == 0
         amounts.each do |amt|
           amount_parameters = prepare_amount_parameters amt.merge!({transaction: transaction})
-          new_amount = add_to_debit_side ? DebitAmount.new : CreditAmount.new
+          new_amount = add_to_debits ? DebitAmount.new : CreditAmount.new
           new_amount.assign_attributes(amount_parameters, as: :transation_builder)
-          transaction.debit_amounts << new_amount  if add_to_debit_side
-          transaction.credit_amounts << new_amount unless add_to_debit_side
+          transaction.debit_amounts << new_amount  if add_to_debits
+          transaction.credit_amounts << new_amount unless add_to_debits
         end
       end
 

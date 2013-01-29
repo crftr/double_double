@@ -6,6 +6,6 @@ module DoubleDouble
   #
   # @see http://en.wikipedia.org/wiki/Equity_(finance) Equity
   #
-  class Equity < RightSideAccount
+  class Equity < NormalCreditAccount
   end
 end

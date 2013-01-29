@@ -6,6 +6,6 @@ module DoubleDouble
   #
   # @see http://en.wikipedia.org/wiki/Liability_(financial_accounting) Liability
   #
-  class Liability < RightSideAccount
+  class Liability < NormalCreditAccount
   end
 end

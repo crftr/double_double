@@ -81,6 +81,22 @@ Rake the new migration
 
     $ rake db:migrate
 
+## Overview
+
+### Accounts
+
+Account Type              | Normal Balance | Description                                        | Example Uses 
+------------------------- | -------------- | -------------------------------------------------- | -------------------------------------------
+`DoubleDouble::Asset`     | Debit          | Resources owned or controlled                      | Cash, Office Computers, Grandma's Jewelry
+`DoubleDouble::Liability` | Credit         | Obligations                                        | Accounts Payable, Bank Loan
+`DoubleDouble::Equity`    | Credit         | The claim to assets after all liabilities are paid | Paid-In Capital, Dividends, Retained Earnings
+`DoubleDouble::Revenue`   | Credit         | Income                                             | Sales, Service Income, Interest Income
+`DoubleDouble::Expense`   | Debit          | Expenditures                                       | Office Supplies, Utilities, Salaries, Rent
+
+### Amounts & Transactions
+
+...
+
 ## Usage
 
 TODO: Write usage instructions here

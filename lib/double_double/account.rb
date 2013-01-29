@@ -64,12 +64,12 @@ module DoubleDouble
     #
     # @return [Money] The value balance of all accounts
     def self.trial_balance
-      raise(NoMethodError, "undefined method 'trial_balance'") unless self.new.class == DoubleDouble::Account
+      raise(NoMethodError, "undefined method 'trial_balance'") unless self == DoubleDouble::Account
       Asset.balance - (Liability.balance + Equity.balance + Revenue.balance - Expense.balance)
     end
     
     def self.balance
-      raise(NoMethodError, "undefined method 'balance'") if self.new.class == DoubleDouble::Account
+      raise(NoMethodError, "undefined method 'balance'") if self == DoubleDouble::Account
       accounts_balance = Money.new(0)
       accounts = self.all
       accounts.each do |acct|
@@ -85,17 +85,18 @@ module DoubleDouble
     protected
       # The balance method that derived Accounts utilize.
       #
-      # Left Side Accounts:
+      # Nornal Debit Accounts:
       # if contra { credits_balance(hash) - debits_balance(hash)  }
       # else      { debits_balance(hash)  - credits_balance(hash) }
       #
-      # Right Side Accounts:
+      # Normal Credit Accounts:
       # if contra { debits_balance(hash)  - credits_balance(hash) }
       # else      { credits_balance(hash) - debits_balance(hash)  }
       #
       # @return [Money] The balance of the account instance
-      def child_account_balance(is_left_side_account, hash = {})
-        if (is_left_side_account && contra) || !(is_left_side_account || contra)
+      def child_account_balance(is_normal_debit_account, hash = {})
+        raise(NoMethodError, "undefined method 'balance'") if self == DoubleDouble::Account
+        if (is_normal_debit_account && contra) || !(is_normal_debit_account || contra)
           credits_balance(hash) - debits_balance(hash)
         else
           debits_balance(hash) - credits_balance(hash)

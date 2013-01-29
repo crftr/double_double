@@ -5,8 +5,8 @@ module DoubleDouble
       let(:account_type) {:equity}
     end
 
-    it_behaves_like "a right side account type" do
-      let(:right_side_account_type) {:equity}
+    it_behaves_like "a normal credit account type" do
+      let(:normal_credit_account_type) {:equity}
     end
 
     it "should create a proper equity account" do

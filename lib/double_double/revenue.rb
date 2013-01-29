@@ -6,6 +6,6 @@ module DoubleDouble
   #
   # @see http://en.wikipedia.org/wiki/Revenue Revenue
   #
-  class Revenue < RightSideAccount
+  class Revenue < NormalCreditAccount
   end
 end

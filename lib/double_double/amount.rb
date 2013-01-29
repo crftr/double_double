@@ -22,7 +22,8 @@ module DoubleDouble
 
     # scope :by_transaction_type_number, -> {|tt_num| where( transaction: {transaction_type: {number: tt_num}})}
 
-    validates_presence_of :type, :amount_cents, :transaction, :account
+    validates_presence_of :type, :transaction, :account
+    validates :amount_cents, numericality: {greater_than: 0}
     
     composed_of :amount,
       class_name: "Money",

@@ -6,6 +6,6 @@ module DoubleDouble
   #
   # @see http://en.wikipedia.org/wiki/Asset Assets
   #
-  class Asset < LeftSideAccount
+  class Asset < NormalDebitAccount
   end
 end

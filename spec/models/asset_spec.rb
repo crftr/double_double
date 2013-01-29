@@ -5,8 +5,8 @@ module DoubleDouble
       let(:account_type) {:asset}
     end
 
-    it_behaves_like "a left side account type" do
-      let(:left_side_account_type) {:asset}
+    it_behaves_like "a normal debit account type" do
+      let(:normal_debit_account_type) {:asset}
     end
 
     it "should create a proper Asset account" do
