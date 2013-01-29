@@ -89,13 +89,13 @@ Rake the new migration
 [2]: http://en.wikipedia.org/wiki/Double-entry_bookkeeping_system#History
 
 As with many off-the-shelf accounting systems, this project supports:
-* **Context**: to support segmenting.  For use-cases where it is important to track by invoice, purchase order, job, project, etc.
-* **Initiator**: if it is important to know *who* authorized or performed the action.
-* **Accountee**: the affected account holder.
+* **Accountee**: an account holder.
+* **Context**: to make it easy to track activity on invoices, purchase orders, jobs, projects, etc.
+* **Initiator**: *who* authorized or performed the action.
 
 ### Accounts
 
-Account Type              | Normal Balance | Description                                        | Example Uses 
+Account Classes           | Normal Balance | Description                                        | Example Uses 
 ------------------------- | -------------- | -------------------------------------------------- | -------------------------------------------
 `DoubleDouble::Asset`     | Debit          | Resources owned or controlled                      | Cash, Office Computers, Grandma's Jewelry
 `DoubleDouble::Liability` | Credit         | Obligations                                        | Accounts Payable, Bank Loan
