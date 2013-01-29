@@ -7,18 +7,19 @@ module DoubleDouble
   class Amount < ActiveRecord::Base
     self.table_name = 'double_double_amounts'
 
-    attr_accessible :account, :amount, :transaction, :context_id, :context_type, 
-                    :initiator_id, :initiator_type, :accountee_id, :accountee_type, as: :transation_builder
+    attr_accessible :account, :amount, :transaction,
+                    :context_id, :context_type, :initiator_id, :initiator_type, :accountee_id, :accountee_type,
+                    :context, :initiator, :accountee, as: :transation_builder
     
     belongs_to :transaction
     belongs_to :account
+    belongs_to :accountee,  polymorphic: true
     belongs_to :context,    polymorphic: true
     belongs_to :initiator,  polymorphic: true
-    belongs_to :accountee,  polymorphic: true
     
-    scope :by_context,   ->(c_id, c_base_class) { where(context_id:   c_id, context_type:   c_base_class) }
-    scope :by_initiator, ->(i_id, i_base_class) { where(initiator_id: i_id, initiator_type: i_base_class) }
-    scope :by_accountee, ->(a_id, a_base_class) { where(accountee_id: a_id, accountee_type: a_base_class) }
+    scope :by_accountee, ->(a) { where(accountee_id: a.id, accountee_type: a.class.base_class) }
+    scope :by_context,   ->(c) { where(context_id:   c.id, context_type:   c.class.base_class) }
+    scope :by_initiator, ->(i) { where(initiator_id: i.id, initiator_type: i.class.base_class) }
 
     # scope :by_transaction_type_number, -> {|tt_num| where( transaction: {transaction_type: {number: tt_num}})}
 

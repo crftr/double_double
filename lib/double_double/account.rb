@@ -42,12 +42,11 @@ module DoubleDouble
     validates_uniqueness_of :name, :number
 
     def side_balance(is_debit, hash)
-      hash_keys = hash.keys
       a = is_debit ? DoubleDouble::DebitAmount.scoped : DoubleDouble::CreditAmount.scoped
       a = a.where(account_id: self.id)
-      a = a.by_context(hash[:context_id], hash[:context_type])       if (hash_keys & [:context_id, :context_type]).count == 2
-      a = a.by_initiator(hash[:initiator_id], hash[:initiator_type]) if (hash_keys & [:initiator_id, :initiator_type]).count == 2
-      a = a.by_accountee(hash[:accountee_id], hash[:accountee_type]) if (hash_keys & [:accountee_id, :accountee_type]).count == 2
+      a = a.by_context(hash[:context])     if hash.has_key? :context
+      a = a.by_initiator(hash[:initiator]) if hash.has_key? :initiator
+      a = a.by_accountee(hash[:accountee]) if hash.has_key? :accountee
       Money.new(a.sum(:amount_cents))
     end
     

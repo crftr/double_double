@@ -4,6 +4,10 @@ module DoubleDouble
     before(:each) do
       @cash = DoubleDouble::Asset.create!(name:'Cash', number: 11)
       @loan = DoubleDouble::Liability.create!(name:'Loan', number: 12)
+
+      # dummy objects to stand-in for a context
+      @campaign1 = DoubleDouble::Asset.create!(name:'campaign_test1', number: 9991)
+      @campaign2 = DoubleDouble::Asset.create!(name:'campaign_test2', number: 9992)
     end
 
     it 'should create a transaction using the create! method' do
@@ -13,6 +17,7 @@ module DoubleDouble
           debits:  [{account: 'Cash', amount: 10}],
           credits: [{account: 'Loan', amount:  9},
                     {account: 'Loan', amount:  1}])
+
       }.should change(DoubleDouble::Transaction, :count).by(1)
     end
 
@@ -110,29 +115,16 @@ module DoubleDouble
       it 'should allow a transaction to be built describing the context in the hash' do
         Transaction.create!(
           description: 'Sold some widgets',
-          debits:  [{account: 'Cash', amount: 60, context_id: 55, context_type: 'Campaign'},
-                    {account: 'Cash', amount: 40, context_id: 66, context_type: 'Campaign'}], 
+          debits:  [{account: 'Cash', amount: 60, context: @campaign1},
+                    {account: 'Cash', amount: 40, context: @campaign2}], 
           credits: [{account: 'Loan', amount: 45},
                     {account: 'Loan', amount:  5},
-                    {account: 'Loan', amount: 50, context_id: 55, context_type: 'Campaign'}])
-        Amount.by_context(55, 'Campaign').count.should eq(2)
-        Amount.by_context(66, 'Campaign').count.should eq(1)
-        @cash.debits_balance(context_id: 55, context_type: 'Campaign').should eq(60)
-        @cash.debits_balance(context_id: 66, context_type: 'Campaign').should eq(40)
-      end
-
-      it 'should not create a context association unless both ID and TYPE are present' do
-        Transaction.create!(
-          description: 'Sold some widgets',
-          debits:  [{account: 'Cash', amount: 60, context_id:  55, context_type: nil},
-                    {account: 'Cash', amount: 40, context_id: nil, context_type: 'Campaign'}], 
-          credits: [{account: 'Loan', amount: 45},
-                    {account: 'Loan', amount:  5},
-                    {account: 'Loan', amount: 50, context_id:  55, context_type: 'Campaign'}])
-        Amount.by_context(55, 'Campaign').count.should eq(1)
-        Amount.by_context(66, 'Campaign').count.should eq(0)
-        @cash.debits_balance(context_id: 55, context_type: 'Campaign').should eq(0)
-      end      
+                    {account: 'Loan', amount: 50, context: @campaign1}])
+        Amount.by_context(@campaign1).count.should eq(2)
+        Amount.by_context(@campaign2).count.should eq(1)
+        @cash.debits_balance(context: @campaign1).should eq(60)
+        @cash.debits_balance(context: @campaign2).should eq(40)
+      end  
     end
   end
 end

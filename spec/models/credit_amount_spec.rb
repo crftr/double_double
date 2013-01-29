@@ -5,6 +5,8 @@ module DoubleDouble
       @cash = DoubleDouble::Asset.create!(name:'Cash', number: 11)
       @loan = DoubleDouble::Liability.create!(name:'Loan', number: 12)
       @dummy_transaction = DoubleDouble::Transaction.new
+      @job = DoubleDouble::Expense.create!(name: 'stand-in job', number: 999)
+      @po  = DoubleDouble::Expense.create!(name: 'stand-in purchase order', number: 333)
     end
 
     it "should not be valid without an amount" do
@@ -45,21 +47,21 @@ module DoubleDouble
       Transaction.create!(
           description: 'Foobar1',
           debits:  [{account: 'Cash', amount: Money.new(123)}], 
-          credits: [{account: 'Loan', amount: Money.new(123), context_id: 77, context_type: 'Job'}])
+          credits: [{account: 'Loan', amount: Money.new(123), context: @job}])
       Transaction.create!(
           description: 'Foobar2',
           debits:  [{account: 'Cash', amount: Money.new(321)}], 
-          credits: [{account: 'Loan', amount: Money.new(321), context_id: 77, context_type: 'Job'}])
+          credits: [{account: 'Loan', amount: Money.new(321), context: @job}])
       Transaction.create!(
           description: 'Foobar3',
           debits:  [{account: 'Cash', amount: Money.new(275)}], 
-          credits: [{account: 'Loan', amount: Money.new(275), context_id: 82, context_type: 'Job'}])
+          credits: [{account: 'Loan', amount: Money.new(275), context: @po}])
       Transaction.create!(
           description: 'Foobar4',
           debits:  [{account: 'Cash', amount: Money.new(999)}], 
           credits: [{account: 'Loan', amount: Money.new(999)}])
-      @loan.credits_balance({context_id: 77, context_type: 'Job'}).should == Money.new(123 + 321)
-      @loan.credits_balance({context_id: 82, context_type: 'Job'}).should == Money.new(275)
+      @loan.credits_balance({context: @job}).should == Money.new(123 + 321)
+      @loan.credits_balance({context: @po}).should == Money.new(275)
       @loan.credits_balance.should == Money.new(123 + 321 + 275 + 999)
     end
   end
