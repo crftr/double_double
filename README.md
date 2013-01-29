@@ -109,9 +109,10 @@ In double_double, all accounts created are considered to be the chart of account
 `DoubleDouble::Expense`   | Debit              | Expenditures                                       | Utilities, Salaries, Rent, Taco Tuesday
 
 Accounts have the following attributes:
-1. **name**
-2. **number** for reporting purposes
-3. **contra flag** (*optional, `default: false`*)
+
+1. name
+2. number, for reporting purposes
+3. contra flag, optional `default: false`
 
 An example 'Cash' asset account as account number `20`
 
