@@ -3,7 +3,9 @@
 [![Dependency Status](https://gemnasium.com/crftr/double_double.png)](https://gemnasium.com/crftr/double_double)
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/crftr/double_double)
 
-A double-entry accounting system.
+A double-entry accounting system.  Currency-agnostic but insistent on using integers through the Money gem (see *[stackoverflow: Float or Decimal?][1]*).
+
+[1]: http://stackoverflow.com/q/61872/18213
 
 ## Installation
 
@@ -101,6 +103,10 @@ Account Type              | Normal Balance | Description                        
 
 TODO: Write usage instructions here
 
+## Tests
+
+All code is backed by Rspec tests.  Clone this repository and either `rspec spec` or `rake spec` if Rake is installed.
+
 ## Contributing
 
 1. Fork it
@@ -111,5 +117,5 @@ TODO: Write usage instructions here
 
 ## Notes
 
-double_double was heavily influenced by mbulat's plutus project and regularly working with quickbooks.
+double_double was influenced by mbulat's plutus project and regularly working with quickbooks.
 
