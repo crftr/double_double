@@ -3,9 +3,7 @@
 [![Dependency Status](https://gemnasium.com/crftr/double_double.png)](https://gemnasium.com/crftr/double_double)
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/crftr/double_double)
 
-A double-entry accounting system.  Currency-agnostic but insistent on using integers through the Money gem (see *[stackoverflow: Float or Decimal?][1]*).
-
-[1]: http://stackoverflow.com/q/61872/18213
+A double-entry accrual accounting system for your application. Currency-agnostic but uses the Money gem. Account holder support and contexts are built-in.
 
 ## Installation
 
@@ -85,6 +83,16 @@ Rake the new migration
 
 ## Overview
 
+[Double entry accounting][1] practices have been [traced back to the 13th century][2].  double_double strives to make accepted practices accessible and relatively easy to implement within other applications.
+
+[1]: http://en.wikipedia.org/wiki/Double-entry_bookkeeping_system
+[2]: http://en.wikipedia.org/wiki/Double-entry_bookkeeping_system#History
+
+As with many off-the-shelf accounting systems, this project supports:
+* **Context**: to support segmenting.  For use-cases where it is important to track by invoice, purchase order, job, project, etc.
+* **Initiator**: if it is important to know *who* authorized or performed the action.
+* **Accountee**: the affected account holder.
+
 ### Accounts
 
 Account Type              | Normal Balance | Description                                        | Example Uses 
@@ -92,7 +100,7 @@ Account Type              | Normal Balance | Description                        
 `DoubleDouble::Asset`     | Debit          | Resources owned or controlled                      | Cash, Office Computers, Grandma's Jewelry
 `DoubleDouble::Liability` | Credit         | Obligations                                        | Accounts Payable, Bank Loan
 `DoubleDouble::Equity`    | Credit         | The claim to assets after all liabilities are paid | Paid-In Capital, Dividends, Retained Earnings
-`DoubleDouble::Revenue`   | Credit         | Income                                             | Sales, Service Income, Interest Income
+`DoubleDouble::Revenue`   | Credit         | Income                                             | Sales, Interest Income
 `DoubleDouble::Expense`   | Debit          | Expenditures                                       | Office Supplies, Utilities, Salaries, Rent
 
 ### Amounts & Transactions
