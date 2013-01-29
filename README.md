@@ -110,9 +110,9 @@ In double_double, all accounts created are considered to be the chart of account
 
 Accounts have the following attributes:
 
-1. name
-2. number, for reporting purposes
-3. contra flag, optional `default: false`
+* **name**
+* **number**, for reporting purposes
+* **contra** flag, _optional_ `default: false`
 
 An example 'Cash' asset account as account number `20`
 
@@ -127,7 +127,7 @@ DoubleDouble::Revenue.create! name: 'Sales',     number: 40
 DoubleDouble::Revenue.create! name: 'Discounts', number: 50, contra: true
 ```
 
-Contra accounts are used to offset a related account of the same class.  *The example above is a common method to track sales.  The full **sales value** of the sale would be attributed to 'Sales' while any discounts given would be added to 'Discounts.'*
+Contra accounts are used to offset a related account of the same class.  *The example above is a common method to track sales.  The full __sales value__ of the sale would be attributed to 'Sales' while any discounts given would be added to 'Discounts.'*
 
 
 ### Amounts & Transactions
