@@ -40,6 +40,7 @@ module DoubleDouble
 
     validates_presence_of :type, :name, :number
     validates_uniqueness_of :name, :number
+    validates_length_of :name, :minimum => 1
 
     def side_balance(is_debit, hash)
       a = is_debit ? DoubleDouble::DebitAmount.scoped : DoubleDouble::CreditAmount.scoped

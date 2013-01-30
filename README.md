@@ -94,7 +94,7 @@ As with many off-the-shelf accounting systems, this project supports:
 
 ### Accounts
 
-All accounts created in a double-entry system make up the [chart of accounts][3].  This collection of accounts will determine how money is tracked as it moves through the system.  It is important to design and create the chart of accounts prior to creating transactions.  *If we want people to hold "an individual account" in this system, we will configure them as an accountee, not with an new account.  *See the section on accountees* *
+All accounts created in a double-entry system make up the [chart of accounts][3].  This collection of accounts will determine how money is tracked as it moves through the system.  It is important to design and create the chart of accounts prior to creating transactions.  *If we want people to hold "an individual account" in this system, we will configure them as an accountee, not with a new account.  __See the section on accountees__ *
 
 [3]: http://en.wikipedia.org/wiki/Chart_of_accounts
 
@@ -162,7 +162,7 @@ DoubleDouble::Transaction.create!(
   credits:[
     {account: 'Grandpa Loan', amount: '$800'}])
 ```
-But because we were surprised to have the option to buy a few used textbooks, we can return some of Grandpa's loan.  We will return $320.
+But because we were surprised to have the option to buy a few used textbooks we can return some of Grandpa's loan.  We will return $320.
 ```ruby
 DoubleDouble::Transaction.create!(
   description: 
@@ -172,7 +172,7 @@ DoubleDouble::Transaction.create!(
   credits:[
     {account: 'Cash', amount: '$320'}])
 ```
-If we wanted to know how much we still owed Grandpa, we could look at the balance of the account.
+If we want to know how much we still owed Grandpa we can look at the balance of the account.
 ```ruby
 DoubleDouble::Account.find_by_name('Grandpa Loan').balance.to_s    # => "480.00"
 ```

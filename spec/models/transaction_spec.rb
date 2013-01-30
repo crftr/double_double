@@ -127,13 +127,11 @@ module DoubleDouble
       end  
     end
 
-    describe 'readme scenarios' do
+    describe 'README.md scenarios' do
       it 'should perform BASIC SCENARIO A correctly' do
         DoubleDouble::Asset.create! name:'Cash', number: 11
         DoubleDouble::Liability.create! name:'Grandpa Loan', number: 12
-
         # Grandpa was kind enough to loan us $800 USD in cash for college textbooks.  To enter this we will require a transaction which will affect both 'Cash' and 'Grandpa Loan'
-
         DoubleDouble::Transaction.create!(
           description: 
             'We received a loan from Grandpa',
@@ -141,9 +139,7 @@ module DoubleDouble
             {account: 'Cash', amount: '$800'}],
           credits:[
             {account: 'Grandpa Loan', amount: '$800'}])
-
         # But say that we wanted to return $320 because we were able to purchase a few used books.
-        
         DoubleDouble::Transaction.create!(
           description: 
             'Payed back $320 to Grandpa',
@@ -151,9 +147,7 @@ module DoubleDouble
             {account: 'Grandpa Loan', amount: '$320'}],
           credits:[
             {account: 'Cash', amount: '$320'}])
-
         # If we wanted to know how much we still owed Grandpa, we could look at the balance of the account.
-
         DoubleDouble::Account.find_by_name('Grandpa Loan').balance.to_s.should eq("480.00")
       end
     end

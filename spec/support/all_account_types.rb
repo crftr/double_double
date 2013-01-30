@@ -23,28 +23,35 @@ shared_examples "all account types" do
     end
 
     it "should not be valid without a name" do
-      account = FactoryGirl.build(account_type, :name => nil)
+      account = DoubleDouble.const_get(@capitalized_account_type).new(number: 998)
+      account.should_not be_valid
+      account = DoubleDouble.const_get(@capitalized_account_type).new(name: nil, number: 997)
+      account.should_not be_valid
+      account = DoubleDouble.const_get(@capitalized_account_type).new(name: '', number: 996)
       account.should_not be_valid
     end
 
     it "should respond_to credit_transactions" do
-      account = FactoryGirl.build(account_type)
+      account = DoubleDouble.const_get(@capitalized_account_type).create!(name: 'acct', number: 999)
       account.should respond_to(:credit_transactions)
     end
 
     it "should respond_to debit_transactions" do
-      account = FactoryGirl.build(account_type)
+      account = DoubleDouble.const_get(@capitalized_account_type).create!(name: 'acct', number: 999)
       account.should respond_to(:debit_transactions)
     end
 
     it "a contra account should be capable of balancing against a non-contra account" do
-      account        = FactoryGirl.create(account_type)
-      contra_account = FactoryGirl.create(account_type, :contra => true)
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: 50, account: account)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: 25, account: account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: 75, account: contra_account)
-      t.save
+      DoubleDouble.const_get(@capitalized_account_type).create!(name: 'acct1', number: 1)
+      DoubleDouble.const_get(@capitalized_account_type).create!(name: 'acct2', number: 2, contra: true)
+      DoubleDouble::Transaction.create!(
+        description: 
+          'testing contra balancing',
+        debits:[
+          {account: 'acct1', amount: '$250'},
+          {account: 'acct1', amount: '$550'}],
+        credits:[
+          {account: 'acct2', amount: '$800'}])
       DoubleDouble.const_get(@capitalized_account_type).balance.should == 0
     end
   end

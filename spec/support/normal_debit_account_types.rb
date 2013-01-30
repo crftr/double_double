@@ -1,5 +1,4 @@
 # Asset and Expense account types
-
 shared_examples "a normal debit account type" do
   describe "<<" do
     
@@ -52,9 +51,9 @@ shared_examples "a normal debit account type" do
     end
 
     it "should return the balance with respect to project_id, if project_id is supplied" do
-      acct1         = FactoryGirl.create(normal_debit_account_type)
-      acct2         = FactoryGirl.create(normal_debit_account_type)
-      other_account = FactoryGirl.create("not_#{normal_debit_account_type}".to_sym)
+      acct1         = FactoryGirl.create(normal_debit_account_type, name: 'acct1')
+      acct2         = FactoryGirl.create(normal_debit_account_type, name: 'acct2')
+      other_account = FactoryGirl.create("not_#{normal_debit_account_type}".to_sym, name: 'other_account')
       a1 = rand(1_000_000_000)
       a2 = rand(1_000_000_000)
       a3 = rand(1_000_000_000)
@@ -62,56 +61,56 @@ shared_examples "a normal debit account type" do
       @project1 = FactoryGirl.create(normal_debit_account_type)
       @invoice555 = FactoryGirl.create(normal_debit_account_type)
 
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a1), account: acct1, context: @project1)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a1), account: other_account)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a2), account: acct1, context: @project1)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a2), account: other_account)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: acct1, context: @invoice555)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: other_account)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: acct1)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: other_account)
-      t.save
+      DoubleDouble::Transaction.create!(
+        description: 'Sold some widgets',
+        debits:  [{account: 'other_account', amount: Money.new(a1)}], 
+        credits: [{account: 'acct1',         amount: Money.new(a1), context: @project1}])
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'other_account', amount: Money.new(a2)}], 
+        credits: [{account: 'acct1',         amount: Money.new(a2), context: @project1}])
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'other_account', amount: Money.new(a3)}], 
+        credits: [{account: 'acct1',         amount: Money.new(a3), context: @invoice555}])
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'other_account', amount: Money.new(a3)}], 
+        credits: [{account: 'acct1',         amount: Money.new(a3)}])
 
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a4), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a4), account: acct1, context: @project1)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a2), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a2), account: acct1, context: @project1)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: acct1, context: @invoice555)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: acct1)
-      t.save
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'acct1',         amount: Money.new(a4), context: @project1}], 
+        credits: [{account: 'other_account', amount: Money.new(a4)}])
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'acct1',         amount: Money.new(a2), context: @project1}], 
+        credits: [{account: 'other_account', amount: Money.new(a2)}])
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'acct1',         amount: Money.new(a3), context: @invoice555}], 
+        credits: [{account: 'other_account', amount: Money.new(a3)}])
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'acct1',         amount: Money.new(a3)}], 
+        credits: [{account: 'other_account', amount: Money.new(a3)}])
 
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a4), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a4), account: acct2, context: @project1)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a2), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a2), account: acct2, context: @project1)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: acct2, context: @invoice555)
-      t.save
-      t = FactoryGirl.build(:transaction)
-      t.credit_amounts << FactoryGirl.create(:credit_amt, transaction: t, amount: Money.new(a3), account: other_account)
-      t.debit_amounts  << FactoryGirl.create(:debit_amt,  transaction: t, amount: Money.new(a3), account: acct2)
-      t.save
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'acct2',         amount: Money.new(a4), context: @project1}], 
+        credits: [{account: 'other_account', amount: Money.new(a4)}])
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'acct2',         amount: Money.new(a2), context: @project1}], 
+        credits: [{account: 'other_account', amount: Money.new(a2)}])
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'acct2',         amount: Money.new(a3), context: @invoice555}], 
+        credits: [{account: 'other_account', amount: Money.new(a3)}])
+      DoubleDouble::Transaction.create!(
+        description: 'Sold something',
+        debits:  [{account: 'acct2',         amount: Money.new(a3)}], 
+        credits: [{account: 'other_account', amount: Money.new(a3)}])
 
       acct1.balance({context: @project1}).should   == Money.new((a4 + a2) - (a1 + a2))
       acct1.balance({context: @invoice555}).should == Money.new(a3 - a3)
