@@ -131,6 +131,7 @@ module DoubleDouble
       it 'should perform BASIC SCENARIO A correctly' do
         DoubleDouble::Asset.create! name:'Cash', number: 11
         DoubleDouble::Liability.create! name:'Grandpa Loan', number: 12
+        DoubleDouble::Expense.create! name:'Spending', number: 13
         # Grandpa was kind enough to loan us $800 USD in cash for college textbooks.  To enter this we will require a transaction which will affect both 'Cash' and 'Grandpa Loan'
         DoubleDouble::Transaction.create!(
           description: 
@@ -139,7 +140,19 @@ module DoubleDouble
             {account: 'Cash', amount: '$800'}],
           credits:[
             {account: 'Grandpa Loan', amount: '$800'}])
-        # But say that we wanted to return $320 because we were able to purchase a few used books.
+        # We buy our college textbooks.  Luckily we had more than enough.
+        DoubleDouble::Transaction.create!(
+          description: 
+            'Purchase textbooks from bookstore',
+          debits:[
+            {account: 'Spending', amount: '$480'}],
+          credits:[
+            {account: 'Cash', amount: '$480'}])
+
+        # How much cash is left?
+        DoubleDouble::Account.find_by_name('Cash').balance.to_s.should eq("320.00")
+
+        # We deceided that we wanted to return $320 of the loan.
         DoubleDouble::Transaction.create!(
           description: 
             'Payed back $320 to Grandpa',
@@ -147,8 +160,12 @@ module DoubleDouble
             {account: 'Grandpa Loan', amount: '$320'}],
           credits:[
             {account: 'Cash', amount: '$320'}])
-        # If we wanted to know how much we still owed Grandpa, we could look at the balance of the account.
+        # How much do we still owed Grandpa?
         DoubleDouble::Account.find_by_name('Grandpa Loan').balance.to_s.should eq("480.00")
+        # How much did we spend?
+        DoubleDouble::Account.find_by_name('Spending').balance.to_s.should eq("480.00")
+        # How much cash do we have left?
+        DoubleDouble::Account.find_by_name('Cash').balance.to_s.should eq("0.00")
       end
     end
   end

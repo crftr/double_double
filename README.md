@@ -147,10 +147,12 @@ Contra accounts are used to offset a related account of the same class.  *The ex
 We've decided to keep things very simple and only create two accounts:
 * 'Cash' an asset account.
 * 'Grandpa Loan' a liability account.
+* 'Spending' an expense account
 
 ```ruby
 DoubleDouble::Asset.create! name:'Cash', number: 11
 DoubleDouble::Liability.create! name:'Grandpa Loan', number: 12
+DoubleDouble::Expense.create! name:'Spending', number: 13
 ```
 Grandpa was kind enough to loan us $800 USD in cash for college textbooks.  To enter this we will require a transaction which will affect both 'Cash' and 'Grandpa Loan'
 ```ruby
@@ -162,7 +164,23 @@ DoubleDouble::Transaction.create!(
   credits:[
     {account: 'Grandpa Loan', amount: '$800'}])
 ```
-But because we were surprised to have the option to buy a few used textbooks we can return some of Grandpa's loan.  We will return $320.
+We buy our college textbooks.  Luckily we had more than enough.
+
+```ruby
+DoubleDouble::Transaction.create!(
+  description: 
+    'Purchase textbooks from bookstore',
+  debits:[
+    {account: 'Spending', amount: '$480'}],
+  credits:[
+    {account: 'Cash', amount: '$480'}])
+```
+How much cash is left?
+
+```ruby
+DoubleDouble::Account.find_by_name('Cash').balance.to_s.should eq("320.00")
+```
+We deceided that we wanted to return $320 of the loan.
 ```ruby
 DoubleDouble::Transaction.create!(
   description: 
@@ -172,10 +190,19 @@ DoubleDouble::Transaction.create!(
   credits:[
     {account: 'Cash', amount: '$320'}])
 ```
-If we want to know how much we still owed Grandpa we can look at the balance of the account.
+How much do we still owed Grandpa?
 ```ruby
-DoubleDouble::Account.find_by_name('Grandpa Loan').balance.to_s    # => "480.00"
+DoubleDouble::Account.find_by_name('Grandpa Loan').balance.to_s   # => "480.00"
 ```
+How much did we spend?
+```ruby
+DoubleDouble::Account.find_by_name('Spending').balance.to_s       # => "480.00"
+```
+How much cash do we have left?
+```ruby
+DoubleDouble::Account.find_by_name('Cash').balance.to_s           # => "0.00"
+```
+
 
 ### Realistic Scenarios
 * TODO: Write a realistic scenario
