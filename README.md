@@ -132,20 +132,19 @@ Contra accounts are used to offset a related account of the same class.  *The ex
 
 ### Amounts & Transactions
 
-TODO: Transaction basics
-TODO: Amount basics
-TODO: Accountees
-TODO: Contexts
-TODO: Initiated_by
+* TODO: Transaction basics
+* TODO: Amount basics
+* TODO: Accountees
+* TODO: Contexts
+* TODO: Initiated_by
 
 ## Example Scenarios
 
-### Basic Scenario
+### Basic Scenarios
 
-#### Basic Scenario A
-We are creating a personal application to only track loan payments back to Grandpa.  
+#### Basic Scenario: We are creating a personal application to only track loan payments back to Grandpa.  
 
-We've decided that the accounts required will be:
+We've decided to keep things very simple and only create two accounts:
 * 'Cash' an asset account.
 * 'Grandpa Loan' a liability account.
 
@@ -163,7 +162,7 @@ DoubleDouble::Transaction.create!(
   credits:[
     {account: 'Grandpa Loan', amount: '$800'}])
 ```
-But say that we wanted to return $320 because we were able to purchase a few used books.
+But because we were surprised to have the option to buy a few used textbooks, we can return some of Grandpa's loan.  We will return $320.
 ```ruby
 DoubleDouble::Transaction.create!(
   description: 
@@ -178,9 +177,11 @@ If we wanted to know how much we still owed Grandpa, we could look at the balanc
 DoubleDouble::Account.find_by_name('Grandpa Loan').balance.to_s    # => "480.00"
 ```
 
+### Realistic Scenarios
+* TODO: Write a realistic scenario
 
-TODO: Write a realistic scenario
-TODO: Write a realistic & complex scenario
+### Complex Scenarios
+* TODO: Write a realistic & complex scenario
 
 ## Tests
 
