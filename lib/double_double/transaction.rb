@@ -45,7 +45,7 @@ module DoubleDouble
     #   transaction = DoubleDouble::Transaction.build(
     #     description: "Sold some widgets",
     #     debits: [
-    #       {account: "Accounts Receivable", amount: 50, context_id: 20, context_type: 'Job'}], 
+    #       {account: "Accounts Receivable", amount: 50, context: @some_active_record_object}], 
     #     credits: [
     #       {account: "Sales Revenue",       amount: 45},
     #       {account: "Sales Tax Payable",   amount:  5}])
