@@ -144,7 +144,7 @@ Contra accounts are used to offset a related account of the same class.  *The ex
 
 #### Basic Scenario: We are creating a personal application to only track loan payments back to Grandpa.  
 
-We've decided to keep things very simple and only create two accounts:
+We've decided to keep things very simple and only create a few accounts:
 * 'Cash' an asset account.
 * 'Grandpa Loan' a liability account.
 * 'Spending' an expense account
@@ -164,7 +164,7 @@ DoubleDouble::Transaction.create!(
   credits:[
     {account: 'Grandpa Loan', amount: '$800'}])
 ```
-We buy our college textbooks.  Luckily we had more than enough.
+We buy our college textbooks.
 
 ```ruby
 DoubleDouble::Transaction.create!(
@@ -178,7 +178,7 @@ DoubleDouble::Transaction.create!(
 How much cash is left?
 
 ```ruby
-DoubleDouble::Account.find_by_name('Cash').balance.to_s.should eq("320.00")
+DoubleDouble::Account.find_by_name('Cash').balance.to_s           # => "320.00"
 ```
 We deceided that we wanted to return $320 of the loan.
 ```ruby
