@@ -127,7 +127,7 @@ DoubleDouble::Revenue.create! name: 'Sales',     number: 40
 DoubleDouble::Revenue.create! name: 'Discounts', number: 50, contra: true
 ```
 
-Contra accounts are used to offset a related account of the same class.  *The example above is a common method to track sales.  The full __sales value__ of the sale would be attributed to 'Sales' while any discounts given would be added to 'Discounts.'*
+Contra accounts are used to offset a related account of the same class.  *The example above is a common method to track sales.  The full __sales value__ of the sale would be assigned to 'Sales' while any discounts given would be assigned to 'Discounts.'*
 
 
 ### Amounts & Transactions
@@ -140,7 +140,47 @@ TODO: Initiated_by
 
 ## Example Scenarios
 
-TODO: Write a basic, realistic, and complex scenario.
+### Basic Scenario
+
+#### Basic Scenario A
+We are creating a personal application to only track loan payments back to Grandpa.  
+
+We've decided that the accounts required will be:
+* 'Cash' an asset account.
+* 'Grandpa Loan' a liability account.
+
+```ruby
+DoubleDouble::Asset.create! name:'Cash', number: 11
+DoubleDouble::Liability.create! name:'Grandpa Loan', number: 12
+```
+Grandpa was kind enough to loan us $800 USD in cash for college textbooks.  To enter this we will require a transaction which will affect both 'Cash' and 'Grandpa Loan'
+```ruby
+DoubleDouble::Transaction.create!(
+  description: 
+    'We received a loan from Grandpa',
+  debits:[
+    {account: 'Cash', amount: '$800'}],
+  credits:[
+    {account: 'Grandpa Loan', amount: '$800'}])
+```
+But say that we wanted to return $320 because we were able to purchase a few used books.
+```ruby
+DoubleDouble::Transaction.create!(
+  description: 
+    'Payed back $320 to Grandpa',
+  debits:[
+    {account: 'Grandpa Loan', amount: '$320'}],
+  credits:[
+    {account: 'Cash', amount: '$320'}])
+```
+If we wanted to know how much we still owed Grandpa, we could look at the balance of the account.
+```ruby
+DoubleDouble::Account.find_by_name('Grandpa Loan').balance.to_s    # => "480.00"
+```
+
+
+TODO: Write a realistic scenario
+TODO: Write a realistic & complex scenario
 
 ## Tests
 
