@@ -150,7 +150,7 @@ module DoubleDouble
             {account: 'Cash', amount: '$480'}])
 
         # How much cash is left?
-        DoubleDouble::Account.find_by_name('Cash').balance.to_s.should eq("320.00")
+        DoubleDouble::Account.named('Cash').balance.to_s.should eq("320.00")
 
         # We deceided that we wanted to return $320 of the loan.
         DoubleDouble::Transaction.create!(
@@ -161,11 +161,11 @@ module DoubleDouble
           credits:[
             {account: 'Cash', amount: '$320'}])
         # How much do we still owed Grandpa?
-        DoubleDouble::Account.find_by_name('Grandpa Loan').balance.to_s.should eq("480.00")
+        DoubleDouble::Account.named('Grandpa Loan').balance.to_s.should eq("480.00")
         # How much did we spend?
-        DoubleDouble::Account.find_by_name('Spending').balance.to_s.should eq("480.00")
+        DoubleDouble::Account.named('Spending').balance.to_s.should eq("480.00")
         # How much cash do we have left?
-        DoubleDouble::Account.find_by_name('Cash').balance.to_s.should eq("0.00")
+        DoubleDouble::Account.named('Cash').balance.to_s.should eq("0.00")
       end
     end
   end

@@ -82,6 +82,14 @@ module DoubleDouble
       accounts_balance
     end
 
+    def self.named account_name
+      self.where(name: account_name.to_s).first
+    end
+
+    def self.numbered account_number
+      self.where(number: account_number.to_i).first
+    end
+
     protected
       # The balance method that derived Accounts utilize.
       #

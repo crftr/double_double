@@ -7,8 +7,8 @@ module DoubleDouble
   # debit transactions
   #
   # @example
-  #   cash = DoubleDouble::Asset.find_by_name('Cash')
-  #   accounts_receivable = DoubleDouble::Asset.find_by_name('Accounts Receivable')
+  #   cash = DoubleDouble::Asset.named('Cash')
+  #   accounts_receivable = DoubleDouble::Asset.named('Accounts Receivable')
   #
   #   debit_amount = DoubleDouble::DebitAmount.new(account: 'cash', amount: 1000)
   #   credit_amount = DoubleDouble::CreditAmount.new(account: 'accounts_receivable', amount: 1000)
@@ -102,7 +102,7 @@ module DoubleDouble
       end
 
       def self.prepare_amount_parameters args
-        prepared_params = { account: Account.find_by_name(args[:account]), transaction: args[:transaction], amount: args[:amount]}
+        prepared_params = { account: Account.named(args[:account]), transaction: args[:transaction], amount: args[:amount]}
         prepared_params.merge!({accountee: args[:accountee]}) if args.has_key? :accountee
         prepared_params.merge!({context:   args[:context]})   if args.has_key? :context
         prepared_params.merge!({initiator: args[:initiator]}) if args.has_key? :initiator

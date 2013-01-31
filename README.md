@@ -178,7 +178,7 @@ DoubleDouble::Transaction.create!(
 How much cash is left?
 
 ```ruby
-DoubleDouble::Account.find_by_name('Cash').balance.to_s           # => "320.00"
+DoubleDouble::Account.named('Cash').balance.to_s           # => "320.00"
 ```
 We deceided that we wanted to return $320 of the loan.
 ```ruby
@@ -192,15 +192,15 @@ DoubleDouble::Transaction.create!(
 ```
 How much do we still owe Grandpa?
 ```ruby
-DoubleDouble::Account.find_by_name('Grandpa Loan').balance.to_s   # => "480.00"
+DoubleDouble::Account.named('Grandpa Loan').balance.to_s   # => "480.00"
 ```
 How much did we spend?
 ```ruby
-DoubleDouble::Account.find_by_name('Spending').balance.to_s       # => "480.00"
+DoubleDouble::Account.named('Spending').balance.to_s       # => "480.00"
 ```
 How much cash do we have left?
 ```ruby
-DoubleDouble::Account.find_by_name('Cash').balance.to_s           # => "0.00"
+DoubleDouble::Account.named('Cash').balance.to_s           # => "0.00"
 ```
 
 
