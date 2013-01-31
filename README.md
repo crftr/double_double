@@ -190,7 +190,7 @@ DoubleDouble::Transaction.create!(
   credits:[
     {account: 'Cash', amount: '$320'}])
 ```
-How much do we still owed Grandpa?
+How much do we still owe Grandpa?
 ```ruby
 DoubleDouble::Account.find_by_name('Grandpa Loan').balance.to_s   # => "480.00"
 ```
