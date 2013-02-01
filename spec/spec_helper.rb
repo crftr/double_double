@@ -25,10 +25,9 @@ ActiveRecord::Migration.verbose = false
     add_index :double_double_transactions, :transaction_type_id
 
     create_table :double_double_transaction_types do |t|
-      t.integer :number,        null: false
       t.string :description,    null: false
     end
-    add_index :double_double_transaction_types, :number
+    add_index :double_double_transaction_types, :description
 
     create_table :double_double_amounts do |t|
       t.string :type

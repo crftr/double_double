@@ -3,9 +3,20 @@ module DoubleDouble
     self.table_name = 'double_double_transaction_types'
     
     has_many :transactions
-    attr_accessible :number, :description
+    attr_accessible :description
 
-    validates_numericality_of :number,      greater_than: 0
-    validates_length_of       :description, minimum: 6
+    validates :description, length: { minimum: 6 }, presence: true, uniqueness: true
+
+    def self.of description_given
+      TransactionType.where(description: description_given.to_s).first
+    end
+  end
+
+  class UnassignedTransactionType
+    class << self
+      def description
+        'unassigned'
+      end
+    end
   end
 end

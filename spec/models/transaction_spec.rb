@@ -4,7 +4,6 @@ module DoubleDouble
     before(:each) do
       @cash = DoubleDouble::Asset.create!(name:'Cash_11', number: 1011)
       @loan = DoubleDouble::Liability.create!(name:'Loan_12', number: 1012)
-
       # dummy objects to stand-in for a context
       @campaign1 = DoubleDouble::Asset.create!(name:'campaign_test1', number: 9991)
       @campaign2 = DoubleDouble::Asset.create!(name:'campaign_test2', number: 9992)
@@ -12,18 +11,17 @@ module DoubleDouble
 
     it_behaves_like "it can run the README scenarios"
 
-    it 'should create a transaction using the create! method' do
+    it 'should create a Transaction using the create! method' do
       -> {
         Transaction.create!(
           description: 'spec transaction 01',
           debits:  [{account: 'Cash_11', amount: 10}],
           credits: [{account: 'Loan_12', amount:  9},
                     {account: 'Loan_12', amount:  1}])
-
       }.should change(DoubleDouble::Transaction, :count).by(1)
     end
 
-    it 'should not create a transaction using the build method' do
+    it 'should not create a Transaction using the build method' do
       -> {
         Transaction.build(
           description: 'spec transaction 01',
@@ -113,8 +111,30 @@ module DoubleDouble
       t.errors['base'].should == ['The credit and debit amounts are not equal']
     end
 
+    describe 'transaction_types' do
+      it 'should create a Transaction with a TransactionType of Unassigned if none is passed in' do
+        t = Transaction.build(
+          description: 'spec transaction 01',
+          debits:  [{account: 'Cash_11', amount: 10}],
+          credits: [{account: 'Loan_12', amount:  9},
+                    {account: 'Loan_12', amount:  1}])
+        t.transaction_type.description.should eq('unassigned')
+      end
+
+      it 'should create a Transaction with a TransactionType of Unassigned if none is passed in' do
+        TransactionType.create!(description: 'donation')
+        t = Transaction.build(
+          description: 'spec transaction 01',
+          transaction_type: TransactionType.of(:donation),
+          debits:  [{account: 'Cash_11', amount: 10}],
+          credits: [{account: 'Loan_12', amount:  9},
+                    {account: 'Loan_12', amount:  1}])
+        t.transaction_type.description.should eq('donation')
+      end
+    end
+
     describe 'context references' do
-      it 'should allow a transaction to be built describing the context in the hash' do
+      it 'should allow a Transaction to be built describing the context in the hash' do
         Transaction.create!(
           description: 'Sold some widgets',
           debits:  [{account: 'Cash_11', amount: 60, context: @campaign1},
@@ -124,6 +144,7 @@ module DoubleDouble
                     {account: 'Loan_12', amount: 50, context: @campaign1}])
         Amount.by_context(@campaign1).count.should eq(2)
         Amount.by_context(@campaign2).count.should eq(1)
+
         @cash.debits_balance(context: @campaign1).should eq(60)
         @cash.debits_balance(context: @campaign2).should eq(40)
       end  

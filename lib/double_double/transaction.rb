@@ -66,6 +66,10 @@ module DoubleDouble
       t.save!
     end
 
+    def transaction_type
+      self.transaction_type_id.nil? ? UnassignedTransactionType : TransactionType.find(self.transaction_type_id)
+    end
+
     private
 
       # Validation
