@@ -33,8 +33,8 @@ Edit the migration to match:
 class CreateDoubleDouble < ActiveRecord::Migration
   def change
     create_table :double_double_accounts do |t|
-      t.string  :name,          null: false
       t.integer :number,        null: false
+      t.string  :name,          null: false
       t.string  :type,          null: false
       t.boolean :contra,        default: false
     end
@@ -42,31 +42,31 @@ class CreateDoubleDouble < ActiveRecord::Migration
 
     create_table :double_double_transactions do |t|
       t.string :description
+      t.references :initiator,        polymorphic: true
       t.references :transaction_type
       t.timestamps
     end
+    add_index :double_double_transactions, :initiator_id
+    add_index :double_double_transactions, :initiator_type
     add_index :double_double_transactions, :transaction_type_id
 
     create_table :double_double_transaction_types do |t|
-      t.integer :number,        null: false
       t.string :description,    null: false
     end
-    add_index :double_double_transaction_types, :number
+    add_index :double_double_transaction_types, :description
 
     create_table :double_double_amounts do |t|
       t.string :type
       t.references :account
       t.references :transaction
-      t.references :accountee,  polymorphic: true
       t.references :context,    polymorphic: true
-      t.references :initiator,  polymorphic: true
+      t.references :accountee,  polymorphic: true
+      
       t.integer :amount_cents, limit: 8, default: 0, null: false
       t.string  :currency
     end
     add_index :double_double_amounts, :context_id
     add_index :double_double_amounts, :context_type
-    add_index :double_double_amounts, :initiator_id
-    add_index :double_double_amounts, :initiator_type
     add_index :double_double_amounts, :accountee_id
     add_index :double_double_amounts, :accountee_type
     add_index :double_double_amounts, :type
