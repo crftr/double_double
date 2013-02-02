@@ -19,9 +19,12 @@ ActiveRecord::Migration.verbose = false
 
     create_table :double_double_transactions do |t|
       t.string :description
+      t.references :initiator,        polymorphic: true
       t.references :transaction_type
       t.timestamps
     end
+    add_index :double_double_transactions, :initiator_id
+    add_index :double_double_transactions, :initiator_type
     add_index :double_double_transactions, :transaction_type_id
 
     create_table :double_double_transaction_types do |t|
@@ -34,7 +37,6 @@ ActiveRecord::Migration.verbose = false
       t.references :account
       t.references :transaction
       t.references :context,    polymorphic: true
-      t.references :initiator,  polymorphic: true
       t.references :accountee,  polymorphic: true
       
       t.integer :amount_cents, limit: 8, default: 0, null: false
@@ -42,8 +44,6 @@ ActiveRecord::Migration.verbose = false
     end
     add_index :double_double_amounts, :context_id
     add_index :double_double_amounts, :context_type
-    add_index :double_double_amounts, :initiator_id
-    add_index :double_double_amounts, :initiator_type
     add_index :double_double_amounts, :accountee_id
     add_index :double_double_amounts, :accountee_type
     add_index :double_double_amounts, :type

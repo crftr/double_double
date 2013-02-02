@@ -4,6 +4,9 @@ module DoubleDouble
     before(:each) do
       @cash = DoubleDouble::Asset.create!(name:'Cash_11', number: 1011)
       @loan = DoubleDouble::Liability.create!(name:'Loan_12', number: 1012)
+      # dummy objects to stand-in for accountees
+      @user1 = DoubleDouble::Asset.create!(name:'some user1', number: 8991)
+      @user2 = DoubleDouble::Asset.create!(name:'some user2', number: 8992)
       # dummy objects to stand-in for a context
       @campaign1 = DoubleDouble::Asset.create!(name:'campaign_test1', number: 9991)
       @campaign2 = DoubleDouble::Asset.create!(name:'campaign_test2', number: 9992)
@@ -133,7 +136,29 @@ module DoubleDouble
       end
     end
 
-    describe 'context references' do
+    describe 'amount accountee references' do
+      it 'should allow a Transaction to be built describing the accountee in the hash' do
+        Transaction.create!(
+          description: 'Sold some widgets',
+          debits:  [{account: 'Cash_11', amount: 60, context: @campaign1, accountee: @user1},
+                    {account: 'Cash_11', amount: 40, context: @campaign2, accountee: @user1},
+                    {account: 'Cash_11', amount:  4, context: @campaign2, accountee: @user2}], 
+          credits: [{account: 'Loan_12', amount: 45},
+                    {account: 'Loan_12', amount:  9},
+                    {account: 'Loan_12', amount: 50, context: @campaign1}])
+        Amount.by_accountee(@user1).count.should eq(2)
+        Amount.by_accountee(@user2).count.should eq(1)
+
+        @cash.debits_balance(context: @campaign1, accountee: @user1).should eq(60)
+        @cash.debits_balance(context: @campaign1, accountee: @user2).should eq(0)
+        @cash.debits_balance(context: @campaign2, accountee: @user1).should eq(40)
+        @cash.debits_balance(context: @campaign2, accountee: @user2).should eq(4)
+        @cash.debits_balance(context: @campaign2).should eq(44)
+        Account.trial_balance.should eq(0)
+      end  
+    end
+
+    describe 'amount context references' do
       it 'should allow a Transaction to be built describing the context in the hash' do
         Transaction.create!(
           description: 'Sold some widgets',
@@ -147,6 +172,7 @@ module DoubleDouble
 
         @cash.debits_balance(context: @campaign1).should eq(60)
         @cash.debits_balance(context: @campaign2).should eq(40)
+        Account.trial_balance.should eq(0)
       end  
     end
   end

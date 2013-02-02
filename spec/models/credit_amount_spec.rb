@@ -63,6 +63,7 @@ module DoubleDouble
       @loan.credits_balance({context: @job}).should == Money.new(123 + 321)
       @loan.credits_balance({context: @po}).should == Money.new(275)
       @loan.credits_balance.should == Money.new(123 + 321 + 275 + 999)
+      Account.trial_balance.should eq(0)
     end
   end
 end

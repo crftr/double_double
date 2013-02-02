@@ -17,11 +17,13 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features|account_types)/})
   gem.require_paths = ['lib']
 
-  gem.add_dependency('money', '~> 5.1')
-  gem.add_dependency('activerecord', '~> 3.2.11')
-  gem.add_development_dependency('sqlite3')
-  gem.add_development_dependency('rspec', '~> 2.12')
-  gem.add_development_dependency('factory_girl')
-  gem.add_development_dependency('database_cleaner')
-  gem.add_development_dependency('pry')
+  gem.required_ruby_version = '>= 1.9.2'
+
+  gem.add_dependency 'money', '~> 5.1'
+  gem.add_dependency 'activerecord',  '~> 3.2.11'
+  gem.add_development_dependency 'sqlite3'
+  gem.add_development_dependency 'rspec', '~> 2.12'
+  gem.add_development_dependency 'factory_girl'
+  gem.add_development_dependency 'database_cleaner'
+  gem.add_development_dependency 'pry'
 end

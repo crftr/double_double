@@ -62,7 +62,7 @@ module DoubleDouble
         description: 'spec transaction 05',
         debits:  [{account: 'contra expense acct', amount: 333}], 
         credits: [{account: 'contra revenue acct', amount: 333}])
-      Account.trial_balance.should == 0
+      Account.trial_balance.should eq(0)
     end
   end
 end

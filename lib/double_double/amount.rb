@@ -13,13 +13,9 @@ module DoubleDouble
     belongs_to :account
     belongs_to :accountee,  polymorphic: true
     belongs_to :context,    polymorphic: true
-    belongs_to :initiator,  polymorphic: true
     
     scope :by_accountee, ->(a) { where(accountee_id: a.id, accountee_type: a.class.base_class) }
     scope :by_context,   ->(c) { where(context_id:   c.id, context_type:   c.class.base_class) }
-    scope :by_initiator, ->(i) { where(initiator_id: i.id, initiator_type: i.class.base_class) }
-
-    # scope :by_transaction_type_number, -> {|tt_num| where( transaction: {transaction_type: {number: tt_num}})}
 
     validates_presence_of :type, :transaction, :account
     validates :amount_cents, numericality: {greater_than: 0}

@@ -46,7 +46,6 @@ module DoubleDouble
       a = is_debit ? DoubleDouble::DebitAmount.scoped : DoubleDouble::CreditAmount.scoped
       a = a.where(account_id: self.id)
       a = a.by_context(hash[:context])     if hash.has_key? :context
-      a = a.by_initiator(hash[:initiator]) if hash.has_key? :initiator
       a = a.by_accountee(hash[:accountee]) if hash.has_key? :accountee
       Money.new(a.sum(:amount_cents))
     end
@@ -70,16 +69,7 @@ module DoubleDouble
     
     def self.balance
       raise(NoMethodError, "undefined method 'balance'") if self == DoubleDouble::Account
-      accounts_balance = Money.new(0)
-      accounts = self.all
-      accounts.each do |acct|
-        if acct.contra
-          accounts_balance -= acct.balance
-        else
-          accounts_balance += acct.balance
-        end
-      end
-      accounts_balance
+      accounts_balance = self.all.inject(Money.new(0)) {|sum, acct| acct.contra ? (sum - acct.balance) : (sum + acct.balance)}
     end
 
     def self.named account_name

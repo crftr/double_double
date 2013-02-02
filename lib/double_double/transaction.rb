@@ -26,6 +26,7 @@ module DoubleDouble
     attr_accessible :description
 
     belongs_to :transaction_type
+    belongs_to :initiator,  polymorphic: true
 
     has_many :credit_amounts
     has_many :debit_amounts
@@ -38,6 +39,7 @@ module DoubleDouble
     validate :amounts_cancel?
 
     scope :by_transaction_type_number, ->(tt_num) { where(transaction_type: {number: tt_num})}
+    scope :by_initiator, ->(i) { where(initiator_id: i.id, initiator_type: i.class.base_class) }
 
     # Simple API for building a transaction and associated debit and credit amounts
     #
@@ -55,7 +57,7 @@ module DoubleDouble
       t = Transaction.new()
       t.description      = args[:description]
       t.transaction_type = args[:transaction_type] if args.has_key? :transaction_type
-
+      t.initiator        = args[:initiator]        if args.has_key? :initiator
       add_amounts_to_transaction(args[:debits],  t, true) 
       add_amounts_to_transaction(args[:credits], t, false)
       t
@@ -109,7 +111,6 @@ module DoubleDouble
         prepared_params = { account: Account.named(args[:account]), transaction: args[:transaction], amount: args[:amount]}
         prepared_params.merge!({accountee: args[:accountee]}) if args.has_key? :accountee
         prepared_params.merge!({context:   args[:context]})   if args.has_key? :context
-        prepared_params.merge!({initiator: args[:initiator]}) if args.has_key? :initiator
         prepared_params
       end
   end
