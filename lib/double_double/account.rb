@@ -42,14 +42,30 @@ module DoubleDouble
     validates_uniqueness_of :name, :number
     validates_length_of :name, :minimum => 1
 
-    def side_balance(is_debit, hash)
-      a = is_debit ? DoubleDouble::DebitAmount.scoped : DoubleDouble::CreditAmount.scoped
-      a = a.where(account_id: self.id)
-      a = a.by_context(hash[:context])     if hash.has_key? :context
-      a = a.by_accountee(hash[:accountee]) if hash.has_key? :accountee
-      Money.new(a.sum(:amount_cents))
+    class << self
+      # The trial balance of all accounts in the system. This should always equal zero,
+      # otherwise there is an error in the system.
+      #
+      # @return [Money] The value balance of all accounts
+      def trial_balance
+        raise(NoMethodError, "undefined method 'trial_balance'") unless self == DoubleDouble::Account
+        Asset.balance - (Liability.balance + Equity.balance + Revenue.balance - Expense.balance)
+      end
+      
+      def balance
+        raise(NoMethodError, "undefined method 'balance'") if self == DoubleDouble::Account
+        accounts_balance = self.all.inject(Money.new(0)) {|sum, acct| acct.contra ? (sum - acct.balance) : (sum + acct.balance)}
+      end
+
+      def named account_name
+        self.where(name: account_name.to_s).first
+      end
+
+      def numbered account_number
+        self.where(number: account_number.to_i).first
+      end
     end
-    
+
     def credits_balance(hash = {})
       side_balance(false, hash)
     end
@@ -58,29 +74,15 @@ module DoubleDouble
       side_balance(true, hash)
     end
 
-    # The trial balance of all accounts in the system. This should always equal zero,
-    # otherwise there is an error in the system.
-    #
-    # @return [Money] The value balance of all accounts
-    def self.trial_balance
-      raise(NoMethodError, "undefined method 'trial_balance'") unless self == DoubleDouble::Account
-      Asset.balance - (Liability.balance + Equity.balance + Revenue.balance - Expense.balance)
-    end
-    
-    def self.balance
-      raise(NoMethodError, "undefined method 'balance'") if self == DoubleDouble::Account
-      accounts_balance = self.all.inject(Money.new(0)) {|sum, acct| acct.contra ? (sum - acct.balance) : (sum + acct.balance)}
-    end
-
-    def self.named account_name
-      self.where(name: account_name.to_s).first
-    end
-
-    def self.numbered account_number
-      self.where(number: account_number.to_i).first
-    end
-
     protected
+
+      def side_balance(is_debit, hash)
+        a = is_debit ? DoubleDouble::DebitAmount.scoped : DoubleDouble::CreditAmount.scoped
+        a = a.where(account_id: self.id)
+        a = a.by_context(hash[:context])     if hash.has_key? :context
+        a = a.by_accountee(hash[:accountee]) if hash.has_key? :accountee
+        Money.new(a.sum(:amount_cents))
+      end
       # The balance method that derived Accounts utilize.
       #
       # Nornal Debit Accounts:

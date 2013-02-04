@@ -38,7 +38,7 @@ module DoubleDouble
     validate :has_debit_amounts?
     validate :amounts_cancel?
 
-    scope :by_transaction_type_number, ->(tt_num) { where(transaction_type: {number: tt_num})}
+    scope :by_transaction_type, ->(tt) { where(transaction_type: tt)}
     scope :by_initiator, ->(i) { where(initiator_id: i.id, initiator_type: i.class.base_class) }
 
     # Simple API for building a transaction and associated debit and credit amounts
