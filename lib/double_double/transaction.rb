@@ -23,7 +23,7 @@ module DoubleDouble
   class Transaction < ActiveRecord::Base
     self.table_name = 'double_double_transactions'
 
-    attr_accessible :description
+    attr_accessible :description, :initiator
 
     belongs_to :transaction_type
     belongs_to :initiator,  polymorphic: true
