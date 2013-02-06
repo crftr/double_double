@@ -54,6 +54,7 @@ module DoubleDouble
     #
     # @return [DoubleDouble::Transaction] A Transaction with built credit and debit objects ready for saving
     def self.build args
+      args.merge!({credits: args[:debits], debits: args[:credits]}) if args[:reversed]
       t = Transaction.new()
       t.description      = args[:description]
       t.transaction_type = args[:transaction_type] if args.has_key? :transaction_type
