@@ -114,6 +114,22 @@ module DoubleDouble
       t.errors['base'].should == ['The credit and debit amounts are not equal']
     end
 
+    describe 'transaction reversing' do
+      it "should negate the same non-reversed transaction" do
+        args_normal = {description: 'reverse test',
+          debits:  [{account: 'Cash_11', amount: 10}],
+          credits: [{account: 'Loan_12', amount:  9},
+                    {account: 'Loan_12', amount:  1}]}
+        args_reversed = args_normal.merge({reversed: true})
+        Transaction.create!(args_normal)
+        Account.named('Cash_11').balance.should eq(10)
+        Account.named('Loan_12').balance.should eq(10)
+        Transaction.create!(args_reversed)
+        Account.named('Cash_11').balance.should eq(0)
+        Account.named('Loan_12').balance.should eq(0)
+      end
+    end
+
     describe 'transaction_types' do
       it 'should create a Transaction with a TransactionType of Unassigned if none is passed in' do
         t = Transaction.build(
