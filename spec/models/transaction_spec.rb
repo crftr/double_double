@@ -152,6 +152,29 @@ module DoubleDouble
       end
     end
 
+    describe 'transaction_types, when multiple types exist together' do
+      it 'should segment based on transaction type' do
+        DoubleDouble::Liability.create!(name:'hotdogs', number: 1015)
+        DoubleDouble::Liability.create!(name:'junk',    number: 1016)
+        TransactionType.create!(description: 'ketchup')
+        TransactionType.create!(description: 'onions')
+        Transaction.create!(
+          description: 'processed ketchup',
+          transaction_type: TransactionType.of(:ketchup),
+          debits:  [{account: 'junk',    amount: 60, context: @campaign1, accountee: @user1}], 
+          credits: [{account: 'hotdogs', amount: 60, context: @campaign1, accountee: @user1}])
+        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, transaction_type: TransactionType.of(:ketchup)}).should == 60
+        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, transaction_type: TransactionType.of(:onions)}).should == 0
+        Transaction.create!(
+          description: 'processed onions',
+          transaction_type: TransactionType.of(:onions),
+          debits:  [{account: 'junk',    amount: 5, context: @campaign1, accountee: @user1}], 
+          credits: [{account: 'hotdogs', amount: 5, context: @campaign1, accountee: @user1}])
+        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, transaction_type: TransactionType.of(:ketchup)}).should == 60
+        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, transaction_type: TransactionType.of(:onions)}).should == 5
+      end
+    end
+
     describe 'amount accountee references' do
       it 'should allow a Transaction to be built describing the accountee in the hash' do
         Transaction.create!(

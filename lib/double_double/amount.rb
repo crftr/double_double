@@ -14,8 +14,9 @@ module DoubleDouble
     belongs_to :accountee,  polymorphic: true
     belongs_to :context,    polymorphic: true
     
-    scope :by_accountee, ->(a) { where(accountee_id: a.id, accountee_type: a.class.base_class) }
-    scope :by_context,   ->(c) { where(context_id:   c.id, context_type:   c.class.base_class) }
+    scope :by_accountee,        ->(a) { where(accountee_id: a.id, accountee_type: a.class.base_class) }
+    scope :by_context,          ->(c) { where(context_id:   c.id, context_type:   c.class.base_class) }
+    scope :by_transaction_type, ->(t) { joins(:transaction).where(double_double_transactions: {transaction_type_id: t}) }
 
     validates_presence_of :type, :transaction, :account
     validates :amount_cents, numericality: {greater_than: 0}
