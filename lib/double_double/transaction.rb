@@ -110,8 +110,9 @@ module DoubleDouble
 
       def self.prepare_amount_parameters args
         prepared_params = { account: Account.named(args[:account]), transaction: args[:transaction], amount: args[:amount]}
-        prepared_params.merge!({accountee: args[:accountee]}) if args.has_key? :accountee
-        prepared_params.merge!({context:   args[:context]})   if args.has_key? :context
+        prepared_params.merge!({accountee:  args[:accountee]})  if args.has_key? :accountee
+        prepared_params.merge!({context:    args[:context]})    if args.has_key? :context
+        prepared_params.merge!({subcontext: args[:subcontext]}) if args.has_key? :subcontext
         prepared_params
       end
   end

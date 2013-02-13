@@ -80,6 +80,7 @@ module DoubleDouble
         a = is_debit ? DoubleDouble::DebitAmount.scoped : DoubleDouble::CreditAmount.scoped
         a = a.where(account_id: self.id)
         a = a.by_context(hash[:context])                   if hash.has_key? :context
+        a = a.by_subcontext(hash[:subcontext])             if hash.has_key? :subcontext
         a = a.by_accountee(hash[:accountee])               if hash.has_key? :accountee
         a = a.by_transaction_type(hash[:transaction_type]) if hash.has_key? :transaction_type
         Money.new(a.sum(:amount_cents))

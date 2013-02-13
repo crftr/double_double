@@ -7,6 +7,8 @@ module DoubleDouble
       @dummy_transaction = DoubleDouble::Transaction.new
       @job = DoubleDouble::Expense.create!(name: 'stand-in job', number: 999)
       @po  = DoubleDouble::Expense.create!(name: 'stand-in purchase order', number: 333)
+      @item_foo = DoubleDouble::Expense.create!(name: 'stand-in item_foo', number: 1000)
+      @item_bar = DoubleDouble::Expense.create!(name: 'stand-in item_bar', number: 1001)
     end
 
     it "should not be valid without an amount" do
@@ -46,23 +48,42 @@ module DoubleDouble
     it "should be sensitive to 'context' when calculating balances, if supplied" do
       Transaction.create!(
           description: 'Foobar1',
-          debits:  [{account: 'Cash', amount: Money.new(123)}], 
-          credits: [{account: 'Loan', amount: Money.new(123), context: @job}])
+          debits:  [{account: 'Cash', amount: 123}], 
+          credits: [{account: 'Loan', amount: 123, context: @job}])
       Transaction.create!(
           description: 'Foobar2',
-          debits:  [{account: 'Cash', amount: Money.new(321)}], 
-          credits: [{account: 'Loan', amount: Money.new(321), context: @job}])
+          debits:  [{account: 'Cash', amount: 321}], 
+          credits: [{account: 'Loan', amount: 321, context: @job}])
       Transaction.create!(
           description: 'Foobar3',
-          debits:  [{account: 'Cash', amount: Money.new(275)}], 
-          credits: [{account: 'Loan', amount: Money.new(275), context: @po}])
+          debits:  [{account: 'Cash', amount: 275}], 
+          credits: [{account: 'Loan', amount: 275, context: @po}])
       Transaction.create!(
           description: 'Foobar4',
-          debits:  [{account: 'Cash', amount: Money.new(999)}], 
-          credits: [{account: 'Loan', amount: Money.new(999)}])
-      @loan.credits_balance({context: @job}).should == Money.new(123 + 321)
-      @loan.credits_balance({context: @po}).should == Money.new(275)
-      @loan.credits_balance.should == Money.new(123 + 321 + 275 + 999)
+          debits:  [{account: 'Cash', amount: 999}], 
+          credits: [{account: 'Loan', amount: 999}])
+      @loan.credits_balance({context: @job}).should == 123 + 321
+      @loan.credits_balance({context: @po}).should == 275
+      @loan.credits_balance.should == 123 + 321 + 275 + 999
+      Transaction.create!(
+          description: 'Foobar5',
+          debits:  [{account: 'Cash', amount: 9_999}], 
+          credits: [{account: 'Loan', amount: 9_999, context: @job, subcontext: @item_foo}])
+      Transaction.create!(
+          description: 'Foobar5',
+          debits:  [{account: 'Cash', amount: 123}], 
+          credits: [{account: 'Loan', amount: 123, context: @po, subcontext: @item_foo}])
+      Transaction.create!(
+          description: 'Foobar6',
+          debits:  [{account: 'Cash', amount: 222}], 
+          credits: [{account: 'Loan', amount: 222, context: @po, subcontext: @item_foo}])
+      Transaction.create!(
+          description: 'Foobar7',
+          debits:  [{account: 'Cash', amount: 1}], 
+          credits: [{account: 'Loan', amount: 1, context: @po, subcontext: @item_bar}])
+      @loan.credits_balance({context: @po, subcontext: @item_foo}).should == 123 + 222
+      @loan.credits_balance({context: @po, subcontext: @item_bar}).should == 1
+
       Account.trial_balance.should eq(0)
     end
   end

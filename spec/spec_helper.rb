@@ -37,6 +37,7 @@ ActiveRecord::Migration.verbose = false
       t.references :account
       t.references :transaction
       t.references :context,    polymorphic: true
+      t.references :subcontext, polymorphic: true
       t.references :accountee,  polymorphic: true
       
       t.integer :amount_cents, limit: 8, default: 0, null: false
@@ -44,6 +45,8 @@ ActiveRecord::Migration.verbose = false
     end
     add_index :double_double_amounts, :context_id
     add_index :double_double_amounts, :context_type
+    add_index :double_double_amounts, :subcontext_id
+    add_index :double_double_amounts, :subcontext_type
     add_index :double_double_amounts, :accountee_id
     add_index :double_double_amounts, :accountee_type
     add_index :double_double_amounts, :type
