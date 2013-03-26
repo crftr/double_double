@@ -10,6 +10,10 @@ module DoubleDouble
     def self.of description_given
       TransactionType.where(description: description_given.to_s).first
     end
+
+    def to_s
+      description
+    end
   end
 
   class UnassignedTransactionType
