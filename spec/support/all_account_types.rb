@@ -9,7 +9,7 @@
 shared_examples "all account types" do
   describe "<<" do
 
-    before(:all) do
+    before(:each) do
       @capitalized_account_type = account_type.to_s.capitalize
     end
 

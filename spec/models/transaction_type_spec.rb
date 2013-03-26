@@ -22,5 +22,10 @@ module DoubleDouble
       t = TransactionType.new(description: '12345')
       t.should_not be_valid
     end
+
+    it 'should return the description as the to_s method' do
+      t = TransactionType.create!(description: 'foobarbaz')
+      t.to_s.should == t.description
+    end
   end
 end
