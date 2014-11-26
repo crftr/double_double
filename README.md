@@ -133,19 +133,7 @@ DoubleDouble::Revenue.create! name: 'Discounts', number: 50, contra: true
 Contra accounts are used to offset a related account of the same class.  *The example above is a common method to track sales.  The full __sales value__ of the sale would be assigned to 'Sales' while any discounts given would be assigned to 'Discounts.'*
 
 
-### Amounts & Transactions
-
-* TODO: Transaction basics
-* TODO: Amount basics
-* TODO: Accountees
-* TODO: Contexts
-* TODO: Initiated_by
-
-## Example Scenarios
-
-### Basic Scenarios
-
-#### Basic Scenario: We are creating a personal application to only track loan payments back to Grandpa.  
+## Example Scenario: We are creating a personal application to only track loan payments back to Grandpa.  
 
 We've decided to keep things very simple and only create a few accounts:
 * 'Cash' an asset account.
@@ -206,12 +194,6 @@ How much cash do we have left?
 DoubleDouble::Account.named('Cash').balance.to_s           # => "0.00"
 ```
 
-
-### Realistic Scenarios
-* TODO: Write a realistic scenario
-
-### Complex Scenarios
-* TODO: Write a realistic & complex scenario
 
 ## Tests
 
