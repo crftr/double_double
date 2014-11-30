@@ -1,6 +1,5 @@
 # double_double
 [![Build Status](https://travis-ci.org/crftr/double_double.png)](https://travis-ci.org/crftr/double_double)
-[![Dependency Status](https://gemnasium.com/crftr/double_double.png)](https://gemnasium.com/crftr/double_double)
 [![Code Climate](https://codeclimate.com/github/crftr/double_double/badges/gpa.svg)](https://codeclimate.com/github/crftr/double_double)
 
 A double-entry accrual accounting system for your application. Currency-agnostic but uses the Money gem. Account holder support and contexts are built-in.
