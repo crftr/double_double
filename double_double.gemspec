@@ -19,8 +19,8 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = '>= 1.9.2'
 
-  gem.add_dependency 'money', '~> 5.1'
-  gem.add_dependency 'activerecord',  '~> 4.2'
+  gem.add_dependency 'money'
+  gem.add_dependency 'activerecord'
   gem.add_development_dependency 'sqlite3'
   gem.add_development_dependency 'rspec', '~> 2.12'
   gem.add_development_dependency 'factory_girl'
