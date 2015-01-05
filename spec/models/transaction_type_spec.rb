@@ -1,30 +1,30 @@
 module DoubleDouble
-  describe TransactionType do
+  describe EntryType do
 
-    it 'should create a TransactionType using the create! method' do
+    it 'should create a EntryType using the create! method' do
       -> {
-        TransactionType.create!(description: '123456')
-      }.should change(DoubleDouble::TransactionType, :count).by(1)
+        EntryType.create!(description: '123456')
+      }.should change(DoubleDouble::EntryType, :count).by(1)
     end
 
     it 'should not be valid without a description' do
       -> {
-        TransactionType.create!(description: '')
+        EntryType.create!(description: '')
       }.should raise_error(ActiveRecord::RecordInvalid)
-      t = TransactionType.new(description: '')
+      t = EntryType.new(description: '')
       t.should_not be_valid
     end
 
     it 'should not be valid without a long-enough description' do
       -> {
-        TransactionType.create!(description: '12345')
+        EntryType.create!(description: '12345')
       }.should raise_error(ActiveRecord::RecordInvalid)
-      t = TransactionType.new(description: '12345')
+      t = EntryType.new(description: '12345')
       t.should_not be_valid
     end
 
     it 'should return the description as the to_s method' do
-      t = TransactionType.create!(description: 'foobarbaz')
+      t = EntryType.create!(description: 'foobarbaz')
       t.to_s.should == t.description
     end
   end

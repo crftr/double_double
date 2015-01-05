@@ -31,12 +31,10 @@ module DoubleDouble
   class Account < ActiveRecord::Base
     self.table_name = 'double_double_accounts'
 
-    attr_accessible :name, :contra, :number
-    
     has_many :credit_amounts
     has_many :debit_amounts
-    has_many :credit_transactions, through: :credit_amounts, source: :transaction
-    has_many :debit_transactions,  through: :debit_amounts,  source: :transaction
+    has_many :credit_entries, through: :credit_amounts, source: :entry
+    has_many :debit_entries,  through: :debit_amounts,  source: :entry
 
     validates_presence_of :type, :name, :number
     validates_uniqueness_of :name, :number
@@ -77,12 +75,13 @@ module DoubleDouble
     protected
 
       def side_balance(is_debit, hash)
-        a = is_debit ? DoubleDouble::DebitAmount.scoped : DoubleDouble::CreditAmount.scoped
+        # .scoped has been removed in rails 4.1
+        a = is_debit ? DoubleDouble::DebitAmount.where(nil): DoubleDouble::CreditAmount.where(nil)
         a = a.where(account_id: self.id)
         a = a.by_context(hash[:context])                   if hash.has_key? :context
         a = a.by_subcontext(hash[:subcontext])             if hash.has_key? :subcontext
         a = a.by_accountee(hash[:accountee])               if hash.has_key? :accountee
-        a = a.by_transaction_type(hash[:transaction_type]) if hash.has_key? :transaction_type
+        a = a.by_entry_type(hash[:entry_type]) if hash.has_key? :entry_type
         Money.new(a.sum(:amount_cents))
       end
       # The balance method that derived Accounts utilize.

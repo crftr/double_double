@@ -17,25 +17,25 @@ ActiveRecord::Migration.verbose = false
     end
     add_index :double_double_accounts, [:name, :type]
 
-    create_table :double_double_transactions do |t|
+    create_table :double_double_entries do |t|
       t.string :description
       t.references :initiator,        polymorphic: true
-      t.references :transaction_type
+      t.references :entry_type
       t.timestamps
     end
-    add_index :double_double_transactions, :initiator_id
-    add_index :double_double_transactions, :initiator_type
-    add_index :double_double_transactions, :transaction_type_id
+    add_index :double_double_entries, :initiator_id
+    add_index :double_double_entries, :initiator_type
+    add_index :double_double_entries, :entry_type_id
 
-    create_table :double_double_transaction_types do |t|
+    create_table :double_double_entry_types do |t|
       t.string :description,    null: false
     end
-    add_index :double_double_transaction_types, :description
+    add_index :double_double_entry_types, :description
 
     create_table :double_double_amounts do |t|
       t.string :type
       t.references :account
-      t.references :transaction
+      t.references :entry
       t.references :context,    polymorphic: true
       t.references :subcontext, polymorphic: true
       t.references :accountee,  polymorphic: true
@@ -50,8 +50,8 @@ ActiveRecord::Migration.verbose = false
     add_index :double_double_amounts, :accountee_id
     add_index :double_double_amounts, :accountee_type
     add_index :double_double_amounts, :type
-    add_index :double_double_amounts, [:account_id, :transaction_id]
-    add_index :double_double_amounts, [:transaction_id, :account_id]
+    add_index :double_double_amounts, [:account_id, :entry_id]
+    add_index :double_double_amounts, [:entry_id, :account_id]
   end
 end
 @migration.new.migrate(:up)

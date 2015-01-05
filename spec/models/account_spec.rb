@@ -29,7 +29,7 @@ module DoubleDouble
       Account.trial_balance.should be_kind_of(Money)
     end
 
-    it "should report a trial balance of 0 with correct transactions (with a contrived example of transactions)" do
+    it "should report a trial balance of 0 with correct entries (with a contrived example of entries)" do
       # credit accounts
       FactoryGirl.create(:liability, name: 'liability acct')
       FactoryGirl.create(:equity,    name: 'equity acct')
@@ -42,24 +42,24 @@ module DoubleDouble
       FactoryGirl.create(:liability, name: 'contra liability acct', :contra => true)
       FactoryGirl.create(:equity,    name: 'contra equity acct',    :contra => true)
       FactoryGirl.create(:revenue,   name: 'contra revenue acct',   :contra => true)
-      Transaction.create!(
-        description: 'spec transaction 01',
+      Entry.create!(
+        description: 'spec entry 01',
         debits:  [{account: 'liability acct', amount: 100_000}],
         credits: [{account: 'asset acct',     amount: 100_000}])
-      Transaction.create!(
-        description: 'spec transaction 02',
+      Entry.create!(
+        description: 'spec entry 02',
         debits:  [{account: 'equity acct',  amount: 1_000}],
         credits: [{account: 'expense acct', amount: 1_000}])
-      Transaction.create!(
-        description: 'spec transaction 03',
+      Entry.create!(
+        description: 'spec entry 03',
         debits:  [{account: 'revenue acct',          amount: 40_404}],
         credits: [{account: 'contra liability acct', amount: 40_404}])
-      Transaction.create!(
-        description: 'spec transaction 04',
+      Entry.create!(
+        description: 'spec entry 04',
         debits:  [{account: 'contra asset acct',  amount: 2}], 
         credits: [{account: 'contra equity acct', amount: 2}])
-      Transaction.create!(
-        description: 'spec transaction 05',
+      Entry.create!(
+        description: 'spec entry 05',
         debits:  [{account: 'contra expense acct', amount: 333}], 
         credits: [{account: 'contra revenue acct', amount: 333}])
       Account.trial_balance.should eq(0)

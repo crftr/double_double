@@ -31,20 +31,20 @@ shared_examples "all account types" do
       account.should_not be_valid
     end
 
-    it "should respond_to credit_transactions" do
+    it "should respond_to credit_entries" do
       account = DoubleDouble.const_get(@capitalized_account_type).create!(name: 'acct', number: 999)
-      account.should respond_to(:credit_transactions)
+      account.should respond_to(:credit_entries)
     end
 
-    it "should respond_to debit_transactions" do
+    it "should respond_to debit_entries" do
       account = DoubleDouble.const_get(@capitalized_account_type).create!(name: 'acct', number: 999)
-      account.should respond_to(:debit_transactions)
+      account.should respond_to(:debit_entries)
     end
 
     it "a contra account should be capable of balancing against a non-contra account" do
       DoubleDouble.const_get(@capitalized_account_type).create!(name: 'acct1', number: 1)
       DoubleDouble.const_get(@capitalized_account_type).create!(name: 'acct2', number: 2, contra: true)
-      DoubleDouble::Transaction.create!(
+      DoubleDouble::Entry.create!(
         description: 
           'testing contra balancing',
         debits:[

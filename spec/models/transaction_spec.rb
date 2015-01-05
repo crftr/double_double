@@ -1,5 +1,5 @@
 module DoubleDouble
-  describe Transaction do
+  describe Entry do
 
     before(:each) do
       @cash = DoubleDouble::Asset.create!(name:'Cash_11', number: 1011)
@@ -14,47 +14,47 @@ module DoubleDouble
 
     it_behaves_like "it can run the README scenarios"
 
-    it 'should create a Transaction using the create! method' do
+    it 'should create a Entry using the create! method' do
       -> {
-        Transaction.create!(
-          description: 'spec transaction 01',
+        Entry.create!(
+          description: 'spec entry 01',
           debits:  [{account: 'Cash_11', amount: 10}],
           credits: [{account: 'Loan_12', amount:  9},
                     {account: 'Loan_12', amount:  1}])
-      }.should change(DoubleDouble::Transaction, :count).by(1)
+      }.should change(DoubleDouble::Entry, :count).by(1)
     end
 
-    it 'should not create a Transaction using the build method' do
+    it 'should not create a Entry using the build method' do
       -> {
-        Transaction.build(
-          description: 'spec transaction 01',
+        Entry.build(
+          description: 'spec entry 01',
           debits:  [{account: 'Cash_11', amount: 100_000}],
           credits: [{account: 'Loan_12', amount: 100_000}])
-      }.should change(DoubleDouble::Transaction, :count).by(0)
+      }.should change(DoubleDouble::Entry, :count).by(0)
     end
 
     it 'should not be valid without a credit amount' do
       # No credit_amount element
-      t1 = Transaction.build(
-        description: 'spec transaction 01',
+      t1 = Entry.build(
+        description: 'spec entry 01',
         debits:  [{account: 'Cash_11', amount: 100_000}])
       t1.should_not be_valid
-      t1.errors['base'].should include('Transaction must have at least one credit amount')
+      t1.errors['base'].should include('Entry must have at least one credit amount')
       t1.errors['base'].should include('The credit and debit amounts are not equal')
       # An empty credit_amount element
-      t2 = Transaction.build(
-        description: 'spec transaction 01',
+      t2 = Entry.build(
+        description: 'spec entry 01',
         debits:  [{account: 'Cash_11', amount: 100_000}],
         credits: [])
       t2.should_not be_valid
-      t2.errors['base'].should include('Transaction must have at least one credit amount') 
+      t2.errors['base'].should include('Entry must have at least one credit amount')
       t2.errors['base'].should include('The credit and debit amounts are not equal')
     end
 
     it 'should raise a RecordInvalid without a credit amount' do
       -> {
-      Transaction.create!(
-        description: 'spec transaction 01',
+      Entry.create!(
+        description: 'spec entry 01',
         debits:  [{account: 'Cash_11', amount: 100_000}],
         credits: [])
       }.should raise_error(ActiveRecord::RecordInvalid)
@@ -62,42 +62,42 @@ module DoubleDouble
 
     it 'should not be valid with an invalid credit amount' do
       -> {
-        Transaction.create!(
-          description: 'spec transaction 01',
+        Entry.create!(
+          description: 'spec entry 01',
           credits: [{account: 'Loan_12', amount: nil}],
           debits:  [{account: 'Cash_11', amount: 100_000}])
-      }.should raise_error(ArgumentError)
+      }.should raise_error(ActiveRecord::RecordInvalid)
     end
 
     it 'should not be valid without a debit amount' do
       # No credit_amount element
-      t1 = Transaction.build(
-        description: 'spec transaction 01',
+      t1 = Entry.build(
+        description: 'spec entry 01',
         credits:  [{account: 'Loan_12', amount: 100_000}])
       t1.should_not be_valid
-      t1.errors['base'].should include('Transaction must have at least one debit amount')
+      t1.errors['base'].should include('Entry must have at least one debit amount')
       t1.errors['base'].should include('The credit and debit amounts are not equal')
       # An empty credit_amount element
-      t2 = Transaction.build(
-        description: 'spec transaction 01',
+      t2 = Entry.build(
+        description: 'spec entry 01',
         credits: [{account: 'Loan_12', amount: 100_000}],
         debits:  [])
       t2.should_not be_valid
-      t2.errors['base'].should include('Transaction must have at least one debit amount')
+      t2.errors['base'].should include('Entry must have at least one debit amount')
       t2.errors['base'].should include('The credit and debit amounts are not equal')
     end
 
     it 'should not be valid with an invalid debit amount' do
       -> {
-        Transaction.create!(
-          description: 'spec transaction 01',
+        Entry.create!(
+          description: 'spec entry 01',
           credits: [{account: 'Cash_11', amount: 100_000}],
           debits:  [{account: 'Loan_12', amount: nil}])
-      }.should raise_error(ArgumentError)
+      }.should raise_error(ActiveRecord::RecordInvalid)
     end
 
     it 'should not be valid without a description' do
-      t = Transaction.build(
+      t = Entry.build(
           description: '',
           debits:  [{account: 'Cash_11', amount: 100_000}],
           credits: [{account: 'Loan_12', amount: 100_000}])
@@ -106,78 +106,78 @@ module DoubleDouble
     end
 
     it 'should require the debit and credit amounts to cancel' do
-      t = Transaction.build(
-        description: 'spec transaction 01',
+      t = Entry.build(
+        description: 'spec entry 01',
         credits: [{account: 'Cash_11', amount: 100_000}],
         debits:  [{account: 'Loan_12', amount:  99_999}])
       t.should_not be_valid
       t.errors['base'].should == ['The credit and debit amounts are not equal']
     end
 
-    describe 'transaction reversing' do
-      it "should negate the same non-reversed transaction" do
+    describe 'entry reversing' do
+      it "should negate the same non-reversed entry" do
         args_normal = {description: 'reverse test',
           debits:  [{account: 'Cash_11', amount: 10}],
           credits: [{account: 'Loan_12', amount:  9},
                     {account: 'Loan_12', amount:  1}]}
         args_reversed = args_normal.merge({reversed: true})
-        Transaction.create!(args_normal)
+        Entry.create!(args_normal)
         Account.named('Cash_11').balance.should eq(10)
         Account.named('Loan_12').balance.should eq(10)
-        Transaction.create!(args_reversed)
+        Entry.create!(args_reversed)
         Account.named('Cash_11').balance.should eq(0)
         Account.named('Loan_12').balance.should eq(0)
       end
     end
 
-    describe 'transaction_types' do
-      it 'should create a Transaction with a TransactionType of Unassigned if none is passed in' do
-        t = Transaction.build(
-          description: 'spec transaction 01',
+    describe 'entry_types' do
+      it 'should create a Entry with a EntryType of Unassigned if none is passed in' do
+        t = Entry.build(
+          description: 'spec entry 01',
           debits:  [{account: 'Cash_11', amount: 10}],
           credits: [{account: 'Loan_12', amount:  9},
                     {account: 'Loan_12', amount:  1}])
-        t.transaction_type.description.should eq('unassigned')
+        t.entry_type.description.should eq('unassigned')
       end
 
-      it 'should create a Transaction with a TransactionType of Unassigned if none is passed in' do
-        TransactionType.create!(description: 'donation')
-        t = Transaction.build(
-          description: 'spec transaction 01',
-          transaction_type: TransactionType.of(:donation),
+      it 'should create a Entry with a EntryType of Unassigned if none is passed in' do
+        EntryType.create!(description: 'donation')
+        t = Entry.build(
+          description: 'spec entry 01',
+          entry_type: EntryType.of(:donation),
           debits:  [{account: 'Cash_11', amount: 10}],
           credits: [{account: 'Loan_12', amount:  9},
                     {account: 'Loan_12', amount:  1}])
-        t.transaction_type.description.should eq('donation')
+        t.entry_type.description.should eq('donation')
       end
     end
 
-    describe 'transaction_types, when multiple types exist together' do
-      it 'should segment based on transaction type' do
+    describe 'entry_types, when multiple types exist together' do
+      it 'should segment based on entry type' do
         DoubleDouble::Liability.create!(name:'hotdogs', number: 1015)
         DoubleDouble::Liability.create!(name:'junk',    number: 1016)
-        TransactionType.create!(description: 'ketchup')
-        TransactionType.create!(description: 'onions')
-        Transaction.create!(
+        EntryType.create!(description: 'ketchup')
+        EntryType.create!(description: 'onions')
+        Entry.create!(
           description: 'processed ketchup',
-          transaction_type: TransactionType.of(:ketchup),
+          entry_type: EntryType.of(:ketchup),
           debits:  [{account: 'junk',    amount: 60, context: @campaign1, accountee: @user1}], 
           credits: [{account: 'hotdogs', amount: 60, context: @campaign1, accountee: @user1}])
-        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, transaction_type: TransactionType.of(:ketchup)}).should == 60
-        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, transaction_type: TransactionType.of(:onions)}).should == 0
-        Transaction.create!(
+        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:ketchup)}).should == 60
+        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:onions)}).should == 0
+        Entry.create!(
           description: 'processed onions',
-          transaction_type: TransactionType.of(:onions),
+          entry_type: EntryType.of(:onions),
           debits:  [{account: 'junk',    amount: 5, context: @campaign1, accountee: @user1}], 
           credits: [{account: 'hotdogs', amount: 5, context: @campaign1, accountee: @user1}])
-        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, transaction_type: TransactionType.of(:ketchup)}).should == 60
-        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, transaction_type: TransactionType.of(:onions)}).should == 5
+        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:ketchup)}).should == 60
+        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:onions)}).should == 5
       end
     end
 
     describe 'amount accountee references' do
-      it 'should allow a Transaction to be built describing the accountee in the hash' do
-        Transaction.create!(
+      it 'should allow a Entry to be built describing the accountee in the hash' do
+        Entry.create!(
           description: 'Sold some widgets',
           debits:  [{account: 'Cash_11', amount: 60, context: @campaign1, accountee: @user1},
                     {account: 'Cash_11', amount: 40, context: @campaign2, accountee: @user1},
@@ -198,8 +198,8 @@ module DoubleDouble
     end
 
     describe 'amount context references' do
-      it 'should allow a Transaction to be built describing the context in the hash' do
-        Transaction.create!(
+      it 'should allow a Entry to be built describing the context in the hash' do
+        Entry.create!(
           description: 'Sold some widgets',
           debits:  [{account: 'Cash_11', amount: 60, context: @campaign1},
                     {account: 'Cash_11', amount: 40, context: @campaign2}], 
