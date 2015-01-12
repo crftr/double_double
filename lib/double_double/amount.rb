@@ -7,9 +7,7 @@ module DoubleDouble
   class Amount < ActiveRecord::Base
     self.table_name = 'double_double_amounts'
 
-    attr_accessible :account, :amount, :transaction, :context, :subcontext, :accountee, as: :transation_builder
-    
-    belongs_to :transaction
+    belongs_to :entry
     belongs_to :account
     belongs_to :accountee,  polymorphic: true
     belongs_to :context,    polymorphic: true
@@ -18,15 +16,27 @@ module DoubleDouble
     scope :by_accountee,        ->(a) { where(accountee_id:  a.id, accountee_type:  a.class.base_class) }
     scope :by_context,          ->(c) { where(context_id:    c.id, context_type:    c.class.base_class) }
     scope :by_subcontext,       ->(s) { where(subcontext_id: s.id, subcontext_type: s.class.base_class) }
-    scope :by_transaction_type, ->(t) { joins(:transaction).where(double_double_transactions: {transaction_type_id: t}) }
+    scope :by_entry_type, ->(t) { joins(:entry).where(double_double_entries: {entry_type_id: t}) }
 
-    validates_presence_of :type, :transaction, :account
+    validates_presence_of :type, :entry, :account
     validates :amount_cents, numericality: {greater_than: 0}
-    
+
     composed_of :amount,
       class_name: "Money",
       mapping: [%w(amount_cents cents), %w(currency currency_as_string)],
-      constructor: Proc.new { |cents, currency| Money.new(cents || 0, currency || Money.default_currency) },
-      converter: Proc.new { |value| value.respond_to?(:to_money) ? value.to_money : raise(ArgumentError, "Can't convert #{value.class} to Money") }
+      constructor: Proc.new { |cents, currency| Money.new(cents || 0, currency || Money.default_currency) }
+
+    # [dane] Workaround to deal with the fact that composed of will never use the converter for a nil value. Otherwise,
+    # we could have simply passed a converter to composed_of. See ActiveRecord::Aggregations#writer_method
+    #
+    def amount=(part)
+      unless part.is_a?(Money)
+        part = Monetize.parse(part)
+        raise(ArgumentError, "Can't convert #{value.class} to Money") unless part
+      end
+      mapping = [%w(amount_cents cents), %w(currency currency_as_string)]
+      mapping.each { |pair| self[pair.first] = part.send(pair.last) }
+      @aggregation_cache[:amount] = part.freeze
+    end
   end
 end

@@ -11,7 +11,7 @@ shared_examples "a normal credit account type" do
       end
     
       it "should report a NEGATIVE balance when an account is debited" do
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold some widgets',
           debits:  [{account: 'acct1', amount: Money.new(75)}], 
           credits: [{account: 'acct2_contra', amount: Money.new(75)}])
@@ -20,7 +20,7 @@ shared_examples "a normal credit account type" do
       end
 
       it "should report a POSITIVE balance when an account is credited" do
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold some widgets',
           debits:  [{account: 'acct2_contra', amount: Money.new(75)}], 
           credits: [{account: 'acct1', amount: Money.new(75)}])
@@ -29,8 +29,8 @@ shared_examples "a normal credit account type" do
       end
 
       it "should report a POSITIVE balance across the account type when CREDITED
-       and using an unrelated type for the balanced side transaction" do
-        DoubleDouble::Transaction.create!(
+       and using an unrelated type for the balanced side entry" do
+        DoubleDouble::Entry.create!(
           description: 'Sold some widgets',
           debits:  [{account: 'other_account', amount: Money.new(50)}], 
           credits: [{account: 'acct1', amount: Money.new(50)}])
@@ -40,8 +40,8 @@ shared_examples "a normal credit account type" do
       end
 
       it "should report a NEGATIVE balance across the account type when DEBITED
-       and using an unrelated type for the balanced side transaction" do
-        DoubleDouble::Transaction.create!(
+       and using an unrelated type for the balanced side entry" do
+        DoubleDouble::Entry.create!(
           description: 'Sold some widgets',
           debits:  [{account: 'acct1', amount: Money.new(50)}], 
           credits: [{account: 'other_account', amount: Money.new(50)}])
@@ -64,53 +64,53 @@ shared_examples "a normal credit account type" do
         @project1 = FactoryGirl.create(normal_credit_account_type)
         @invoice555 = FactoryGirl.create(normal_credit_account_type)
 
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold some widgets',
           debits:  [{account: 'other_account', amount: Money.new(a1)}], 
           credits: [{account: 'acct1',         amount: Money.new(a1), context: @project1}])
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'other_account', amount: Money.new(a2)}], 
           credits: [{account: 'acct1',         amount: Money.new(a2), context: @project1}])
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'other_account', amount: Money.new(a3)}], 
           credits: [{account: 'acct1',         amount: Money.new(a3), context: @invoice555}])
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'other_account', amount: Money.new(a3)}], 
           credits: [{account: 'acct1',         amount: Money.new(a3)}])
 
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'acct1',         amount: Money.new(a4), context: @project1}], 
           credits: [{account: 'other_account', amount: Money.new(a4)}])
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'acct1',         amount: Money.new(a2), context: @project1}], 
           credits: [{account: 'other_account', amount: Money.new(a2)}])
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'acct1',         amount: Money.new(a3), context: @invoice555}], 
           credits: [{account: 'other_account', amount: Money.new(a3)}])
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'acct1',         amount: Money.new(a3)}], 
           credits: [{account: 'other_account', amount: Money.new(a3)}])
 
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'acct2',         amount: Money.new(a4), context: @project1}], 
           credits: [{account: 'other_account', amount: Money.new(a4)}])
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'acct2',         amount: Money.new(a2), context: @project1}], 
           credits: [{account: 'other_account', amount: Money.new(a2)}])
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'acct2',         amount: Money.new(a3), context: @invoice555}], 
           credits: [{account: 'other_account', amount: Money.new(a3)}])
-        DoubleDouble::Transaction.create!(
+        DoubleDouble::Entry.create!(
           description: 'Sold something',
           debits:  [{account: 'acct2',         amount: Money.new(a3)}], 
           credits: [{account: 'other_account', amount: Money.new(a3)}])

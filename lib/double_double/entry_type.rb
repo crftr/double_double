@@ -1,14 +1,13 @@
 module DoubleDouble
-  class TransactionType < ActiveRecord::Base
-    self.table_name = 'double_double_transaction_types'
+  class EntryType < ActiveRecord::Base
+    self.table_name = 'double_double_entry_types'
     
-    has_many :transactions
-    attr_accessible :description
+    has_many :entries
 
     validates :description, length: { minimum: 6 }, presence: true, uniqueness: true
 
     def self.of description_given
-      TransactionType.where(description: description_given.to_s).first
+      EntryType.where(description: description_given.to_s).first
     end
 
     def to_s
@@ -16,7 +15,7 @@ module DoubleDouble
     end
   end
 
-  class UnassignedTransactionType
+  class UnassignedEntryType
     class << self
       def description
         'unassigned'

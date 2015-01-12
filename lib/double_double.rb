@@ -1,5 +1,6 @@
 require 'active_record'
 require 'money'
+require 'monetize'
 
 require 'double_double/version'
 
@@ -18,6 +19,6 @@ require 'double_double/amount'
 require 'double_double/credit_amount'
 require 'double_double/debit_amount'
 
-# Transactions
-require 'double_double/transaction'
-require 'double_double/transaction_type'
+# entries
+require 'double_double/entry'
+require 'double_double/entry_type'

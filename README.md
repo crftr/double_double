@@ -39,25 +39,25 @@ class CreateDoubleDouble < ActiveRecord::Migration
     end
     add_index :double_double_accounts, [:name, :type]
 
-    create_table :double_double_transactions do |t|
+    create_table :double_double_entries do |t|
       t.string :description
       t.references :initiator,        polymorphic: true
-      t.references :transaction_type
+      t.references :entry_type
       t.timestamps
     end
-    add_index :double_double_transactions, :initiator_id
-    add_index :double_double_transactions, :initiator_type
-    add_index :double_double_transactions, :transaction_type_id
+    add_index :double_double_entries, :initiator_id
+    add_index :double_double_entries, :initiator_type
+    add_index :double_double_entries, :entry_type_id
 
-    create_table :double_double_transaction_types do |t|
+    create_table :double_double_entry_types do |t|
       t.string :description,    null: false
     end
-    add_index :double_double_transaction_types, :description
+    add_index :double_double_entry_types, :description
 
     create_table :double_double_amounts do |t|
       t.string :type
       t.references :account
-      t.references :transaction
+      t.references :entry
       t.references :context,    polymorphic: true
       t.references :subcontext, polymorphic: true
       t.references :accountee,  polymorphic: true
@@ -72,8 +72,8 @@ class CreateDoubleDouble < ActiveRecord::Migration
     add_index :double_double_amounts, :accountee_id
     add_index :double_double_amounts, :accountee_type
     add_index :double_double_amounts, :type
-    add_index :double_double_amounts, [:account_id, :transaction_id]
-    add_index :double_double_amounts, [:transaction_id, :account_id]
+    add_index :double_double_amounts, [:account_id, :entry_id]
+    add_index :double_double_amounts, [:entry_id, :account_id]
   end
 end
 ```
@@ -96,7 +96,7 @@ As with many off-the-shelf accounting systems, this project supports:
 
 ### Accounts
 
-All accounts created in a double-entry system make up the [chart of accounts][3].  This collection of accounts will determine how money is tracked as it moves through the system.  It is important to design and create the chart of accounts prior to creating transactions.  *If we want people to hold "an individual account" in this system, we will configure them as an accountee, not with a new account.  __See the section on accountees__ *
+All accounts created in a double-entry system make up the [chart of accounts][3].  This collection of accounts will determine how money is tracked as it moves through the system.  It is important to design and create the chart of accounts prior to creating entries.  *If we want people to hold "an individual account" in this system, we will configure them as an accountee, not with a new account.  __See the section on accountees__ *
 
 [3]: http://en.wikipedia.org/wiki/Chart_of_accounts
 
@@ -144,9 +144,9 @@ DoubleDouble::Asset.create! name:'Cash', number: 11
 DoubleDouble::Liability.create! name:'Grandpa Loan', number: 12
 DoubleDouble::Expense.create! name:'Spending', number: 13
 ```
-Grandpa was kind enough to loan us $800 USD in cash for college textbooks.  To enter this we will require a transaction which will affect both 'Cash' and 'Grandpa Loan'
+Grandpa was kind enough to loan us $800 USD in cash for college textbooks.  To enter this we will require a entry which will affect both 'Cash' and 'Grandpa Loan'
 ```ruby
-DoubleDouble::Transaction.create!(
+DoubleDouble::Entry.create!(
   description: 
     'We received a loan from Grandpa',
   debits:[
@@ -157,7 +157,7 @@ DoubleDouble::Transaction.create!(
 We buy our college textbooks.
 
 ```ruby
-DoubleDouble::Transaction.create!(
+DoubleDouble::Entry.create!(
   description: 
     'Purchase textbooks from bookstore',
   debits:[
@@ -172,7 +172,7 @@ DoubleDouble::Account.named('Cash').balance.to_s           # => "320.00"
 ```
 We deceided that we wanted to return $320 of the loan.
 ```ruby
-DoubleDouble::Transaction.create!(
+DoubleDouble::Entry.create!(
   description: 
     'Payed back $320 to Grandpa',
   debits:[

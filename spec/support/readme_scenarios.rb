@@ -5,8 +5,8 @@ shared_examples "it can run the README scenarios" do
       DoubleDouble::Asset.create! name:'Cash', number: 11
       DoubleDouble::Liability.create! name:'Grandpa Loan', number: 12
       DoubleDouble::Expense.create! name:'Spending', number: 13
-      # Grandpa was kind enough to loan us $800 USD in cash for college textbooks.  To enter this we will require a transaction which will affect both 'Cash' and 'Grandpa Loan'
-      DoubleDouble::Transaction.create!(
+      # Grandpa was kind enough to loan us $800 USD in cash for college textbooks.  To enter this we will require a entry which will affect both 'Cash' and 'Grandpa Loan'
+      DoubleDouble::Entry.create!(
         description: 
           'We received a loan from Grandpa',
         debits:[
@@ -14,7 +14,7 @@ shared_examples "it can run the README scenarios" do
         credits:[
           {account: 'Grandpa Loan', amount: '$800'}])
       # We buy our college textbooks.  Luckily we had more than enough.
-      DoubleDouble::Transaction.create!(
+      DoubleDouble::Entry.create!(
         description: 
           'Purchase textbooks from bookstore',
         debits:[
@@ -24,7 +24,7 @@ shared_examples "it can run the README scenarios" do
       # How much cash is left?
       DoubleDouble::Account.named('Cash').balance.to_s.should eq("320.00")
       # We deceided that we wanted to return $320 of the loan.
-      DoubleDouble::Transaction.create!(
+      DoubleDouble::Entry.create!(
         description: 
           'Payed back $320 to Grandpa',
         debits:[

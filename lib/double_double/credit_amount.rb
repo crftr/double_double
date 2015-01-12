@@ -1,5 +1,5 @@
 module DoubleDouble
-  # The CreditAmount class represents credit entries in the transaction journal.
+  # The CreditAmount class represents credit entries in the entry journal.
   #
   # @example
   #     credit_amount = DoubleDouble::CreditAmount.new(account: "revenue", amount: 1000)

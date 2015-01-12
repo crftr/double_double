@@ -1,9 +1,9 @@
 FactoryGirl.define do
-  factory :transaction, class: DoubleDouble::Transaction do
-    description { FactoryGirl.generate(:transaction_type_description) }
+  factory :entry, class: DoubleDouble::Entry do
+    description { FactoryGirl.generate(:entry_type_description) }
   end
 
-  sequence :transaction_description do |n|
-    "transaction description #{n}"
+  sequence :entry_description do |n|
+    "entry description #{n}"
   end
 end
