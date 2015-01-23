@@ -64,5 +64,15 @@ module DoubleDouble
         credits: [{account: 'contra revenue acct', amount: 333}])
       Account.trial_balance.should eq(0)
     end
+
+    it "should accept an account number when creating entries" do
+      FactoryGirl.create(:liability, name: 'liability acct', number: 800)
+      FactoryGirl.create(:asset,     name: 'asset acct', number: 600)
+      Entry.create!(
+          description: 'spec entry 01',
+          debits:  [{account: 800, amount: 100_000}],
+          credits: [{account: 600,     amount: 100_000}])
+      Account.trial_balance.should eq(0)
+    end
   end
 end
