@@ -39,11 +39,11 @@ shared_examples "it can run the README scenarios" do
       DoubleDouble::Account.named('Cash').balance.to_s.should eq("0.00")
     end
 
-    it 'should perform the REALISTIC SCENARIO correctly' do
+    xit 'should perform the REALISTIC SCENARIO correctly' do
       pending "TODO"
     end
 
-    it 'should perform the COMPLEX SCENARIO correctly' do
+    xit 'should perform the COMPLEX SCENARIO correctly' do
       pending "TODO"
     end
   end
