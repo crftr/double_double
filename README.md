@@ -86,9 +86,6 @@ Rake the new migration
 
 [Double-entry accounting][1] practices have been [traced back to the 13th century][2].  double_double strives to make accepted practices accessible and relatively easy to implement within other applications.
 
-[1]: http://en.wikipedia.org/wiki/Double-entry_bookkeeping_system
-[2]: http://en.wikipedia.org/wiki/Double-entry_bookkeeping_system#History
-
 As with many off-the-shelf accounting systems, this project supports:
 * **Accountee**: an account holder.
 * **Context**: to track activity on invoices, purchase orders, jobs, campaigns, etc.
@@ -97,8 +94,6 @@ As with many off-the-shelf accounting systems, this project supports:
 ### Accounts
 
 All accounts created in a double-entry system make up the [chart of accounts][3].  This collection of accounts will determine how money is tracked as it moves through the system.  It is important to design and create the chart of accounts prior to creating entries.  *If we want people to hold "an individual account" in this system, we will configure them as an accountee, not with a new account.  __See the section on accountees__ *
-
-[3]: http://en.wikipedia.org/wiki/Chart_of_accounts
 
 In double_double, all accounts created are considered to be the chart of accounts.  All accounts are "on the books."
 
@@ -132,66 +127,9 @@ DoubleDouble::Revenue.create! name: 'Discounts', number: 50, contra: true
 Contra accounts are used to offset a related account of the same class.  *The example above is a common method to track sales.  The full __sales value__ of the sale would be assigned to 'Sales' while any discounts given would be assigned to 'Discounts.'*
 
 
-### Example Scenario: Track loan payments back to Grandpa.  
+## Example Scenarios
 
-We've decided to keep things very simple and only create a few accounts:
-* 'Cash' an asset account.
-* 'Grandpa Loan' a liability account.
-* 'Spending' an expense account
-
-```ruby
-DoubleDouble::Asset.create! name:'Cash', number: 11
-DoubleDouble::Liability.create! name:'Grandpa Loan', number: 12
-DoubleDouble::Expense.create! name:'Spending', number: 13
-```
-Grandpa was kind enough to loan us $800 USD in cash for college textbooks.  To enter this we will require a entry which will affect both 'Cash' and 'Grandpa Loan'
-```ruby
-DoubleDouble::Entry.create!(
-  description: 
-    'We received a loan from Grandpa',
-  debits:[
-    {account: 'Cash', amount: '$800'}],
-  credits:[
-    {account: 'Grandpa Loan', amount: '$800'}])
-```
-We buy our college textbooks.
-
-```ruby
-DoubleDouble::Entry.create!(
-  description: 
-    'Purchase textbooks from bookstore',
-  debits:[
-    {account: 'Spending', amount: '$480'}],
-  credits:[
-    {account: 'Cash', amount: '$480'}])
-```
-How much cash is left?
-
-```ruby
-DoubleDouble::Account.named('Cash').balance.to_s           # => "320.00"
-```
-We deceided that we wanted to return $320 of the loan.
-```ruby
-DoubleDouble::Entry.create!(
-  description: 
-    'Payed back $320 to Grandpa',
-  debits:[
-    {account: 'Grandpa Loan', amount: '$320'}],
-  credits:[
-    {account: 'Cash', amount: '$320'}])
-```
-How much do we still owe Grandpa?
-```ruby
-DoubleDouble::Account.named('Grandpa Loan').balance.to_s   # => "480.00"
-```
-How much did we spend?
-```ruby
-DoubleDouble::Account.named('Spending').balance.to_s       # => "480.00"
-```
-How much cash do we have left?
-```ruby
-DoubleDouble::Account.named('Cash').balance.to_s           # => "0.00"
-```
+See the [double_double wiki][4]
 
 
 ## Tests
@@ -210,3 +148,7 @@ All code is backed by Rspec tests.  Clone this repository and either `rspec spec
 
 double_double was influenced by mbulat's plutus project and regularly working with quickbooks.
 
+[1]: http://en.wikipedia.org/wiki/Double-entry_bookkeeping_system
+[2]: http://en.wikipedia.org/wiki/Double-entry_bookkeeping_system#History
+[3]: http://en.wikipedia.org/wiki/Chart_of_accounts
+[4]: https://github.com/crftr/double_double/wiki
