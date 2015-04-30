@@ -19,7 +19,7 @@ ActiveRecord::Migration.verbose = false
       t.string :description
       t.references :initiator,        polymorphic: true
       t.references :entry_type
-      t.timestamps
+      t.timestamps                    null: false
     end
     add_index :double_double_entries, :initiator_id
     add_index :double_double_entries, :initiator_type
