@@ -75,12 +75,11 @@ module DoubleDouble
     protected
 
       def side_balance(is_debit, hash)
-        # .scoped has been removed in rails 4.1
         a = is_debit ? DoubleDouble::DebitAmount.where(nil): DoubleDouble::CreditAmount.where(nil)
         a = a.where(account_id: self.id)
-        a = a.by_context(hash[:context])                   if hash.has_key? :context
-        a = a.by_subcontext(hash[:subcontext])             if hash.has_key? :subcontext
-        a = a.by_accountee(hash[:accountee])               if hash.has_key? :accountee
+        a = a.by_context(hash[:context])       if hash.has_key? :context
+        a = a.by_subcontext(hash[:subcontext]) if hash.has_key? :subcontext
+        a = a.by_accountee(hash[:accountee])   if hash.has_key? :accountee
         a = a.by_entry_type(hash[:entry_type]) if hash.has_key? :entry_type
         Money.new(a.sum(:amount_cents))
       end
@@ -96,7 +95,7 @@ module DoubleDouble
       #
       # @return [Money] The balance of the account instance
       def child_account_balance(is_normal_debit_account, hash = {})
-        raise(NoMethodError, "undefined method 'balance'") if self == DoubleDouble::Account
+        raise(NoMethodError, "undefined method 'balance'") if self === DoubleDouble::Account
         if (is_normal_debit_account && contra) || !(is_normal_debit_account || contra)
           credits_balance(hash) - debits_balance(hash)
         else

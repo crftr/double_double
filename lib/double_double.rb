@@ -19,6 +19,6 @@ require 'double_double/amount'
 require 'double_double/credit_amount'
 require 'double_double/debit_amount'
 
-# entries
+# Entries
 require 'double_double/entry'
 require 'double_double/entry_type'

@@ -2,8 +2,6 @@ require 'database_cleaner'
 require 'double_double'
 require 'factory_girl'
 
-require 'pry'
-
 # Create an in-memory database and run our minimal migration
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 ActiveRecord::Migration.verbose = false
