@@ -1,6 +1,5 @@
 module DoubleDouble
   describe CreditAmount do
-
     before(:each) do
       @cash = DoubleDouble::Asset.create!(name:'Cash', number: 11)
       @loan = DoubleDouble::Liability.create!(name:'Loan', number: 12)
@@ -16,7 +15,7 @@ module DoubleDouble
       c.amount = nil
       c.account = @cash
       c.entry = @dummy_entry
-      c.should_not be_valid
+      expect(c).to_not be_valid
     end
 
     it "should not be valid with an amount of 0" do
@@ -24,7 +23,7 @@ module DoubleDouble
       c.amount = 0
       c.account = @cash
       c.entry = @dummy_entry
-      c.should_not be_valid
+      expect(c).to_not be_valid
     end
 
     it "should not be valid without a entry" do
@@ -32,7 +31,7 @@ module DoubleDouble
       c.amount = 9
       c.account = @cash
       c.entry = nil
-      c.should_not be_valid
+      expect(c).to_not be_valid
     end
 
     it "should not be valid without an account" do
@@ -40,7 +39,7 @@ module DoubleDouble
       c.amount = 9
       c.account = nil
       c.entry = @dummy_entry
-      c.should_not be_valid
+      expect(c).to_not be_valid
     end
     
     it "should be sensitive to 'context' when calculating balances, if supplied" do
@@ -60,9 +59,9 @@ module DoubleDouble
           description: 'Foobar4',
           debits:  [{account: 'Cash', amount: 999}], 
           credits: [{account: 'Loan', amount: 999}])
-      @loan.credits_balance({context: @job}).should == 123 + 321
-      @loan.credits_balance({context: @po}).should == 275
-      @loan.credits_balance.should == 123 + 321 + 275 + 999
+      expect(@loan.credits_balance({context: @job})).to eq(123 + 321)
+      expect(@loan.credits_balance({context: @po})).to  eq(275)
+      expect(@loan.credits_balance).to                  eq(123 + 321 + 275 + 999)
       Entry.create!(
           description: 'Foobar5',
           debits:  [{account: 'Cash', amount: 9_999}], 
@@ -79,10 +78,9 @@ module DoubleDouble
           description: 'Foobar7',
           debits:  [{account: 'Cash', amount: 1}], 
           credits: [{account: 'Loan', amount: 1, context: @po, subcontext: @item_bar}])
-      @loan.credits_balance({context: @po, subcontext: @item_foo}).should == 123 + 222
-      @loan.credits_balance({context: @po, subcontext: @item_bar}).should == 1
-
-      Account.trial_balance.should eq(0)
+      expect(@loan.credits_balance({context: @po, subcontext: @item_foo})).to eq(123 + 222)
+      expect(@loan.credits_balance({context: @po, subcontext: @item_bar})).to eq(1)
+      expect(Account.trial_balance).to eq(0)
     end
   end
 end

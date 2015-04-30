@@ -1,6 +1,5 @@
 module DoubleDouble
   describe Asset do
-    
     it_behaves_like "all account types" do
       let(:account_type) {:asset}
     end
@@ -10,8 +9,8 @@ module DoubleDouble
     end
 
     it "should create a proper Asset account" do
-      -> { DoubleDouble::Asset.create! name: 'Asset acct', number: 20
-      }.should change(DoubleDouble::Asset, :count).by(1)
+      expect { DoubleDouble::Asset.create! name: 'Asset acct', number: 20
+      }.to change(DoubleDouble::Asset, :count).by(1)
     end
   end
 end

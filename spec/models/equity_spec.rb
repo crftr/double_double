@@ -1,6 +1,5 @@
 module DoubleDouble
-  describe Equity do
-    
+  describe Equity do 
     it_behaves_like "all account types" do
       let(:account_type) {:equity}
     end
@@ -10,8 +9,8 @@ module DoubleDouble
     end
 
     it "should create a proper equity account" do
-      -> { DoubleDouble::Equity.create! name: 'Equity acct', number: 20
-      }.should change(DoubleDouble::Equity, :count).by(1)
+      expect { DoubleDouble::Equity.create! name: 'Equity acct', number: 20
+      }.to change(DoubleDouble::Equity, :count).by(1)
     end
   end
 end

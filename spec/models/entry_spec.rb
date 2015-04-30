@@ -1,6 +1,5 @@
 module DoubleDouble
   describe Entry do
-
     before(:each) do
       @cash = DoubleDouble::Asset.create!(name:'Cash_11', number: 1011)
       @loan = DoubleDouble::Liability.create!(name:'Loan_12', number: 1012)
@@ -15,22 +14,22 @@ module DoubleDouble
     it_behaves_like "it can run the README scenarios"
 
     it 'should create a Entry using the create! method' do
-      -> {
+      expect {
         Entry.create!(
           description: 'spec entry 01',
           debits:  [{account: 'Cash_11', amount: 10}],
           credits: [{account: 'Loan_12', amount:  9},
                     {account: 'Loan_12', amount:  1}])
-      }.should change(DoubleDouble::Entry, :count).by(1)
+      }.to change(DoubleDouble::Entry, :count).by(1)
     end
 
     it 'should not create a Entry using the build method' do
-      -> {
+      expect {
         Entry.build(
           description: 'spec entry 01',
           debits:  [{account: 'Cash_11', amount: 100_000}],
           credits: [{account: 'Loan_12', amount: 100_000}])
-      }.should change(DoubleDouble::Entry, :count).by(0)
+      }.to change(DoubleDouble::Entry, :count).by(0)
     end
 
     it 'should not be valid without a credit amount' do
@@ -38,35 +37,35 @@ module DoubleDouble
       t1 = Entry.build(
         description: 'spec entry 01',
         debits:  [{account: 'Cash_11', amount: 100_000}])
-      t1.should_not be_valid
-      t1.errors['base'].should include('Entry must have at least one credit amount')
-      t1.errors['base'].should include('The credit and debit amounts are not equal')
+      expect(t1).to_not be_valid
+      expect(t1.errors['base']).to include('Entry must have at least one credit amount')
+      expect(t1.errors['base']).to include('The credit and debit amounts are not equal')
       # An empty credit_amount element
       t2 = Entry.build(
         description: 'spec entry 01',
         debits:  [{account: 'Cash_11', amount: 100_000}],
         credits: [])
-      t2.should_not be_valid
-      t2.errors['base'].should include('Entry must have at least one credit amount')
-      t2.errors['base'].should include('The credit and debit amounts are not equal')
+      expect(t2).to_not be_valid
+      expect(t2.errors['base']).to include('Entry must have at least one credit amount')
+      expect(t2.errors['base']).to include('The credit and debit amounts are not equal')
     end
 
     it 'should raise a RecordInvalid without a credit amount' do
-      -> {
+      expect {
       Entry.create!(
         description: 'spec entry 01',
         debits:  [{account: 'Cash_11', amount: 100_000}],
         credits: [])
-      }.should raise_error(ActiveRecord::RecordInvalid)
+      }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it 'should not be valid with an invalid credit amount' do
-      -> {
+      expect {
         Entry.create!(
           description: 'spec entry 01',
           credits: [{account: 'Loan_12', amount: nil}],
           debits:  [{account: 'Cash_11', amount: 100_000}])
-      }.should raise_error(ActiveRecord::RecordInvalid)
+      }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it 'should not be valid without a debit amount' do
@@ -74,26 +73,26 @@ module DoubleDouble
       t1 = Entry.build(
         description: 'spec entry 01',
         credits:  [{account: 'Loan_12', amount: 100_000}])
-      t1.should_not be_valid
-      t1.errors['base'].should include('Entry must have at least one debit amount')
-      t1.errors['base'].should include('The credit and debit amounts are not equal')
+      expect(t1).to_not be_valid
+      expect(t1.errors['base']).to include('Entry must have at least one debit amount')
+      expect(t1.errors['base']).to include('The credit and debit amounts are not equal')
       # An empty credit_amount element
       t2 = Entry.build(
         description: 'spec entry 01',
         credits: [{account: 'Loan_12', amount: 100_000}],
         debits:  [])
-      t2.should_not be_valid
-      t2.errors['base'].should include('Entry must have at least one debit amount')
-      t2.errors['base'].should include('The credit and debit amounts are not equal')
+      expect(t2).to_not be_valid
+      expect(t2.errors['base']).to include('Entry must have at least one debit amount')
+      expect(t2.errors['base']).to include('The credit and debit amounts are not equal')
     end
 
     it 'should not be valid with an invalid debit amount' do
-      -> {
+      expect {
         Entry.create!(
           description: 'spec entry 01',
           credits: [{account: 'Cash_11', amount: 100_000}],
           debits:  [{account: 'Loan_12', amount: nil}])
-      }.should raise_error(ActiveRecord::RecordInvalid)
+      }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it 'should not be valid without a description' do
@@ -101,8 +100,8 @@ module DoubleDouble
           description: '',
           debits:  [{account: 'Cash_11', amount: 100_000}],
           credits: [{account: 'Loan_12', amount: 100_000}])
-      t.should_not be_valid
-      t.errors[:description].should == ["can't be blank"]
+      expect(t).to_not be_valid
+      expect(t.errors[:description]).to eq(["can't be blank"])
     end
 
     it 'should require the debit and credit amounts to cancel' do
@@ -110,8 +109,8 @@ module DoubleDouble
         description: 'spec entry 01',
         credits: [{account: 'Cash_11', amount: 100_000}],
         debits:  [{account: 'Loan_12', amount:  99_999}])
-      t.should_not be_valid
-      t.errors['base'].should == ['The credit and debit amounts are not equal']
+      expect(t).to_not be_valid
+      expect(t.errors['base']).to eq(['The credit and debit amounts are not equal'])
     end
 
     describe 'entry reversing' do
@@ -122,11 +121,11 @@ module DoubleDouble
                     {account: 'Loan_12', amount:  1}]}
         args_reversed = args_normal.merge({reversed: true})
         Entry.create!(args_normal)
-        Account.named('Cash_11').balance.should eq(10)
-        Account.named('Loan_12').balance.should eq(10)
+        expect(Account.named('Cash_11').balance).to eq(10)
+        expect(Account.named('Loan_12').balance).to eq(10)
         Entry.create!(args_reversed)
-        Account.named('Cash_11').balance.should eq(0)
-        Account.named('Loan_12').balance.should eq(0)
+        expect(Account.named('Cash_11').balance).to eq(0)
+        expect(Account.named('Loan_12').balance).to eq(0)
       end
     end
 
@@ -137,7 +136,7 @@ module DoubleDouble
           debits:  [{account: 'Cash_11', amount: 10}],
           credits: [{account: 'Loan_12', amount:  9},
                     {account: 'Loan_12', amount:  1}])
-        t.entry_type.description.should eq('unassigned')
+        expect(t.entry_type.description).to eq('unassigned')
       end
 
       it 'should create a Entry with a EntryType of Unassigned if none is passed in' do
@@ -148,7 +147,7 @@ module DoubleDouble
           debits:  [{account: 'Cash_11', amount: 10}],
           credits: [{account: 'Loan_12', amount:  9},
                     {account: 'Loan_12', amount:  1}])
-        t.entry_type.description.should eq('donation')
+        expect(t.entry_type.description).to eq('donation')
       end
     end
 
@@ -163,15 +162,15 @@ module DoubleDouble
           entry_type: EntryType.of(:ketchup),
           debits:  [{account: 'junk',    amount: 60, context: @campaign1, accountee: @user1}], 
           credits: [{account: 'hotdogs', amount: 60, context: @campaign1, accountee: @user1}])
-        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:ketchup)}).should == 60
-        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:onions)}).should == 0
+        expect(DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:ketchup)})).to eq(60)
+        expect(DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:onions)})).to eq(0)
         Entry.create!(
           description: 'processed onions',
           entry_type: EntryType.of(:onions),
           debits:  [{account: 'junk',    amount: 5, context: @campaign1, accountee: @user1}], 
           credits: [{account: 'hotdogs', amount: 5, context: @campaign1, accountee: @user1}])
-        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:ketchup)}).should == 60
-        DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:onions)}).should == 5
+        expect(DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:ketchup)})).to eq(60)
+        expect(DoubleDouble::Account.named('hotdogs').credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:onions)})).to eq(5)
       end
     end
 
@@ -185,15 +184,15 @@ module DoubleDouble
           credits: [{account: 'Loan_12', amount: 45},
                     {account: 'Loan_12', amount:  9},
                     {account: 'Loan_12', amount: 50, context: @campaign1}])
-        Amount.by_accountee(@user1).count.should eq(2)
-        Amount.by_accountee(@user2).count.should eq(1)
+        expect(Amount.by_accountee(@user1).count).to eq(2)
+        expect(Amount.by_accountee(@user2).count).to eq(1)
 
-        @cash.debits_balance(context: @campaign1, accountee: @user1).should eq(60)
-        @cash.debits_balance(context: @campaign1, accountee: @user2).should eq(0)
-        @cash.debits_balance(context: @campaign2, accountee: @user1).should eq(40)
-        @cash.debits_balance(context: @campaign2, accountee: @user2).should eq(4)
-        @cash.debits_balance(context: @campaign2).should eq(44)
-        Account.trial_balance.should eq(0)
+        expect(@cash.debits_balance(context: @campaign1, accountee: @user1)).to eq(60)
+        expect(@cash.debits_balance(context: @campaign1, accountee: @user2)).to eq(0)
+        expect(@cash.debits_balance(context: @campaign2, accountee: @user1)).to eq(40)
+        expect(@cash.debits_balance(context: @campaign2, accountee: @user2)).to eq(4)
+        expect(@cash.debits_balance(context: @campaign2)).to eq(44)
+        expect(Account.trial_balance).to eq(0)
       end  
     end
 
@@ -206,12 +205,12 @@ module DoubleDouble
           credits: [{account: 'Loan_12', amount: 45},
                     {account: 'Loan_12', amount:  5},
                     {account: 'Loan_12', amount: 50, context: @campaign1}])
-        Amount.by_context(@campaign1).count.should eq(2)
-        Amount.by_context(@campaign2).count.should eq(1)
+        expect(Amount.by_context(@campaign1).count).to eq(2)
+        expect(Amount.by_context(@campaign2).count).to eq(1)
 
-        @cash.debits_balance(context: @campaign1).should eq(60)
-        @cash.debits_balance(context: @campaign2).should eq(40)
-        Account.trial_balance.should eq(0)
+        expect(@cash.debits_balance(context: @campaign1)).to eq(60)
+        expect(@cash.debits_balance(context: @campaign2)).to eq(40)
+        expect(Account.trial_balance).to eq(0)
       end  
     end
   end
