@@ -1,9 +1,7 @@
 # Asset and Expense account types
 shared_examples "a normal debit account type" do
   describe "<<" do
-
     describe "basic behavior" do
-
       before(:each) do
         @acct1         = FactoryGirl.create(normal_debit_account_type, name: 'acct1')
         @acct2_contra  = FactoryGirl.create(normal_debit_account_type, name: 'acct2_contra', :contra => true)
@@ -15,8 +13,8 @@ shared_examples "a normal debit account type" do
           description: 'Sold some widgets',
           debits:  [{account: 'acct1', amount: Money.new(75)}], 
           credits: [{account: 'acct2_contra', amount: Money.new(75)}])
-        @acct1.balance.cents.should        > 0
-        @acct2_contra.balance.cents.should > 0
+        expect(@acct1.balance).to be > 0
+        expect(@acct2_contra.balance).to be > 0
       end
 
       it "should report a NEGATIVE balance when an account is CREDITED" do
@@ -24,8 +22,8 @@ shared_examples "a normal debit account type" do
           description: 'Sold some widgets',
           debits:  [{account: 'acct2_contra', amount: Money.new(75)}], 
           credits: [{account: 'acct1', amount: Money.new(75)}])
-        @acct1.balance.cents.should        < 0
-        @acct2_contra.balance.cents.should < 0
+        expect(@acct1.balance).to be < 0
+        expect(@acct2_contra.balance).to be < 0
       end
 
       it "should report a NEGATIVE balance across the account type when CREDITED
@@ -34,9 +32,9 @@ shared_examples "a normal debit account type" do
           description: 'Sold some widgets',
           debits:  [{account: 'other_account', amount: Money.new(50)}], 
           credits: [{account: 'acct1', amount: Money.new(50)}])
-        DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize).should respond_to(:balance)
-        DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize).balance.cents.should < 0
-        DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize).balance.should be_kind_of(Money)
+        expect(DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize)).to respond_to(:balance)
+        expect(DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize).balance).to be < 0
+        expect(DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize).balance).to be_kind_of(Money)
       end
 
       it "should report a POSITIVE balance across the account type when DEBITED
@@ -45,9 +43,9 @@ shared_examples "a normal debit account type" do
           description: 'Sold some widgets',
           debits:  [{account: 'acct1', amount: Money.new(50)}], 
           credits: [{account: 'other_account', amount: Money.new(50)}])
-        DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize).should respond_to(:balance)
-        DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize).balance.cents.should > 0
-        DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize).balance.should be_kind_of(Money)
+        expect(DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize)).to respond_to(:balance)
+        expect(DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize).balance).to be > 0
+        expect(DoubleDouble.const_get(normal_debit_account_type.to_s.capitalize).balance).to be_kind_of(Money)
       end
     end
 
@@ -115,13 +113,13 @@ shared_examples "a normal debit account type" do
           debits:  [{account: 'acct2',         amount: Money.new(a3)}], 
           credits: [{account: 'other_account', amount: Money.new(a3)}])
 
-        acct1.balance({context: @project1}).should   == Money.new((a4 + a2) - (a1 + a2))
-        acct1.balance({context: @invoice555}).should == Money.new(a3 - a3)
-        acct1.balance.should                         == Money.new((a4 + a2 + a3 + a3) - (a1 + a2 + a3 + a3))
+        expect(acct1.balance({context: @project1})).to   eq(Money.new((a4 + a2) - (a1 + a2)))
+        expect(acct1.balance({context: @invoice555})).to eq(Money.new(a3 - a3))
+        expect(acct1.balance).to                         eq(Money.new((a4 + a2 + a3 + a3) - (a1 + a2 + a3 + a3)))
         
-        acct2.balance({context: @project1}).should   == Money.new((a4 + a2))
-        acct2.balance({context: @invoice555}).should == Money.new(a3)
-        acct2.balance.should                         == Money.new((a4 + a2 + a3 + a3))
+        expect(acct2.balance({context: @project1})).to   eq(Money.new((a4 + a2)))
+        expect(acct2.balance({context: @invoice555})).to eq(Money.new(a3))
+        expect(acct2.balance).to                         eq(Money.new((a4 + a2 + a3 + a3)))
       end
     end
   end
