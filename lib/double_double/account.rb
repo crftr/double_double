@@ -52,7 +52,7 @@ module DoubleDouble
       
       def balance
         raise(NoMethodError, "undefined method 'balance'") if self == DoubleDouble::Account
-        accounts_balance = self.all.inject(Money.new(0)) {|sum, acct| acct.contra ? (sum - acct.balance) : (sum + acct.balance)}
+        self.all.map{|acct| acct.contra ? -acct.balance : acct.balance}.reduce(:+) || Money.new(0)
       end
 
       def named account_name
