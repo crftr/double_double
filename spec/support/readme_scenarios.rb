@@ -22,7 +22,7 @@ shared_examples "it can run the README scenarios" do
         credits:[
           {account: 'Cash', amount: '$480'}])
       # How much cash is left?
-      DoubleDouble::Account.named('Cash').balance.to_s.should eq("320.00")
+      expect(DoubleDouble::Account.named('Cash').balance.to_s).to eq("320.00")
       # We deceided that we wanted to return $320 of the loan.
       DoubleDouble::Entry.create!(
         description: 
@@ -32,18 +32,18 @@ shared_examples "it can run the README scenarios" do
         credits:[
           {account: 'Cash', amount: '$320'}])
       # How much do we still owed Grandpa?
-      DoubleDouble::Account.named('Grandpa Loan').balance.to_s.should eq("480.00")
+      expect(DoubleDouble::Account.named('Grandpa Loan').balance.to_s).to eq("480.00")
       # How much did we spend?
-      DoubleDouble::Account.named('Spending').balance.to_s.should eq("480.00")
+      expect(DoubleDouble::Account.named('Spending').balance.to_s).to eq("480.00")
       # How much cash do we have left?
-      DoubleDouble::Account.named('Cash').balance.to_s.should eq("0.00")
+      expect(DoubleDouble::Account.named('Cash').balance.to_s).to eq("0.00")
     end
 
-    it 'should perform the REALISTIC SCENARIO correctly' do
+    xit 'should perform the REALISTIC SCENARIO correctly' do
       pending "TODO"
     end
 
-    it 'should perform the COMPLEX SCENARIO correctly' do
+    xit 'should perform the COMPLEX SCENARIO correctly' do
       pending "TODO"
     end
   end

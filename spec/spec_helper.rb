@@ -2,10 +2,8 @@ require 'database_cleaner'
 require 'double_double'
 require 'factory_girl'
 
-require 'pry'
-
 # Create an in-memory database and run our minimal migration
-ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
+ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
 ActiveRecord::Migration.verbose = false
 @migration  = Class.new(ActiveRecord::Migration) do
   def change
@@ -21,7 +19,7 @@ ActiveRecord::Migration.verbose = false
       t.string :description
       t.references :initiator,        polymorphic: true
       t.references :entry_type
-      t.timestamps
+      t.timestamps                    null: false
     end
     add_index :double_double_entries, :initiator_id
     add_index :double_double_entries, :initiator_type
@@ -56,26 +54,16 @@ ActiveRecord::Migration.verbose = false
 end
 @migration.new.migrate(:up)
 
-# Load factories
-Dir[File.expand_path(File.join(File.dirname(__FILE__),'factories','**','*.rb'))].each {|f| require f}
-
-# Load left and right side rspec shared examples
-Dir["./spec/support/**/*.rb"].sort.each {|f| require f}
+# Require other test related files which aren't loaded by default
+Dir["./spec/factories/*.rb"].each {|f| require f}
+Dir["./spec/support/*.rb"].each   {|f| require f}
 
 RSpec.configure do |config|
-  config.treat_symbols_as_metadata_keys_with_true_values = true
-  config.run_all_when_everything_filtered = true
-  config.filter_run :focus
-
-  # Run specs in random order to surface order dependencies. If you find an
-  # order dependency and want to debug it, you can fix the order by providing
-  # the seed, which is printed after each run.
-  #     --seed 1234
   config.order = 'random'
 
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean_with(:truncation)
+    DatabaseCleaner.clean_with :truncation
   end
 
   config.before(:each) do

@@ -13,13 +13,13 @@ module DoubleDouble
     belongs_to :context,    polymorphic: true
     belongs_to :subcontext, polymorphic: true
     
-    scope :by_accountee,        ->(a) { where(accountee_id:  a.id, accountee_type:  a.class.base_class) }
-    scope :by_context,          ->(c) { where(context_id:    c.id, context_type:    c.class.base_class) }
-    scope :by_subcontext,       ->(s) { where(subcontext_id: s.id, subcontext_type: s.class.base_class) }
-    scope :by_entry_type, ->(t) { joins(:entry).where(double_double_entries: {entry_type_id: t}) }
+    scope :by_accountee,   ->(a) { where(accountee_id:  a.id, accountee_type:  a.class.base_class) }
+    scope :by_context,     ->(c) { where(context_id:    c.id, context_type:    c.class.base_class) }
+    scope :by_subcontext,  ->(s) { where(subcontext_id: s.id, subcontext_type: s.class.base_class) }
+    scope :by_entry_type,  ->(e) { joins(:entry).where(double_double_entries: {entry_type_id: e}) }
 
     validates_presence_of :type, :entry, :account
-    validates :amount_cents, numericality: {greater_than: 0}
+    validates :amount_cents, numericality: { greater_than: 0 }
 
     composed_of :amount,
       class_name: "Money",
