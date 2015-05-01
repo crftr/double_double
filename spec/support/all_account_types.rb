@@ -18,16 +18,14 @@ shared_examples "all account types" do
     end
 
     it "should not report a trial balance" do
-      expect { DoubleDouble.const_get(@capitalized_account_type).trial_balance }.to raise_error(NoMethodError)
+      expect { DoubleDouble.const_get(@capitalized_account_type).trial_balance
+      }.to raise_error(NoMethodError)
     end
 
     it "should not be valid without a name" do
-      account = DoubleDouble.const_get(@capitalized_account_type).new(number: 998)
-      expect(account).to_not be_valid
-      account = DoubleDouble.const_get(@capitalized_account_type).new(name: nil, number: 997)
-      expect(account).to_not be_valid
-      account = DoubleDouble.const_get(@capitalized_account_type).new(name: '', number: 996)
-      expect(account).to_not be_valid
+      expect(DoubleDouble.const_get(@capitalized_account_type).new(number: 998)).to_not be_valid
+      expect(DoubleDouble.const_get(@capitalized_account_type).new(name: nil, number: 997)).to_not be_valid
+      expect(DoubleDouble.const_get(@capitalized_account_type).new(name: '', number: 996)).to_not be_valid
     end
 
     it "should respond_to credit_entries" do

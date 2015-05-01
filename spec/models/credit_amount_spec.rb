@@ -11,75 +11,80 @@ module DoubleDouble
     end
 
     it "should not be valid without an amount" do
-      c = DoubleDouble::CreditAmount.new
-      c.amount = nil
-      c.account = @cash
-      c.entry = @dummy_entry
-      expect(c).to_not be_valid
+      amt = DoubleDouble::CreditAmount.new.tap do |credit_amt|
+        credit_amt.amount = nil
+        credit_amt.account = @cash
+        credit_amt.entry = @dummy_entry
+      end
+      expect(amt).to_not be_valid
     end
 
     it "should not be valid with an amount of 0" do
-      c = DoubleDouble::CreditAmount.new
-      c.amount = 0
-      c.account = @cash
-      c.entry = @dummy_entry
-      expect(c).to_not be_valid
+      amt = DoubleDouble::CreditAmount.new.tap do |credit_amt|
+        credit_amt.amount = 0
+        credit_amt.account = @cash
+        credit_amt.entry = @dummy_entry
+      end
+      expect(amt).to_not be_valid
     end
 
     it "should not be valid without a entry" do
-      c = DoubleDouble::CreditAmount.new
-      c.amount = 9
-      c.account = @cash
-      c.entry = nil
-      expect(c).to_not be_valid
+      amt = DoubleDouble::CreditAmount.new.tap do |credit_amt|
+        credit_amt.amount = 9
+        credit_amt.account = @cash
+        credit_amt.entry = nil
+      end
+      expect(amt).to_not be_valid
     end
 
     it "should not be valid without an account" do
-      c = DoubleDouble::CreditAmount.new
-      c.amount = 9
-      c.account = nil
-      c.entry = @dummy_entry
-      expect(c).to_not be_valid
+      amt = DoubleDouble::CreditAmount.new.tap do |credit_amt|
+        credit_amt.amount = 9
+        credit_amt.account = nil
+        credit_amt.entry = @dummy_entry
+      end
+      expect(amt).to_not be_valid
     end
     
     it "should be sensitive to 'context' when calculating balances, if supplied" do
+      amount_job = 111
+      amount_po  = 222
+      amount_no_context = 333
       Entry.create!(
-          description: 'Foobar1',
-          debits:  [{account: 'Cash', amount: 123}], 
-          credits: [{account: 'Loan', amount: 123, context: @job}])
+          description: 'Amount for job',
+          debits:  [{account: 'Cash', amount: amount_job}], 
+          credits: [{account: 'Loan', amount: amount_job, context: @job}])
       Entry.create!(
-          description: 'Foobar2',
-          debits:  [{account: 'Cash', amount: 321}], 
-          credits: [{account: 'Loan', amount: 321, context: @job}])
+          description: 'Amount for PO',
+          debits:  [{account: 'Cash', amount: amount_po}], 
+          credits: [{account: 'Loan', amount: amount_po, context: @po}])
       Entry.create!(
-          description: 'Foobar3',
-          debits:  [{account: 'Cash', amount: 275}], 
-          credits: [{account: 'Loan', amount: 275, context: @po}])
+          description: 'Amount with no context',
+          debits:  [{account: 'Cash', amount: amount_no_context}], 
+          credits: [{account: 'Loan', amount: amount_no_context}])
+      expect(@loan.credits_balance({context: @job})).to eq(amount_job)
+      expect(@loan.credits_balance({context: @po})).to  eq(amount_po)
+      expect(@loan.credits_balance).to                  eq(amount_job + amount_po + amount_no_context)
+    end
+
+    it "should be sensitive to 'subcontext' when calculating balances, if supplied" do
+      amount_foo = 444
+      amount_bar = 555
       Entry.create!(
-          description: 'Foobar4',
-          debits:  [{account: 'Cash', amount: 999}], 
-          credits: [{account: 'Loan', amount: 999}])
-      expect(@loan.credits_balance({context: @job})).to eq(123 + 321)
-      expect(@loan.credits_balance({context: @po})).to  eq(275)
-      expect(@loan.credits_balance).to                  eq(123 + 321 + 275 + 999)
+          description: 'Amount for subcontext foo with context job',
+          debits:  [{account: 'Cash', amount: amount_foo}], 
+          credits: [{account: 'Loan', amount: amount_foo, context: @job, subcontext: @item_foo}])
       Entry.create!(
-          description: 'Foobar5',
-          debits:  [{account: 'Cash', amount: 9_999}], 
-          credits: [{account: 'Loan', amount: 9_999, context: @job, subcontext: @item_foo}])
+          description: 'Amount for subcontext foo with context PO',
+          debits:  [{account: 'Cash', amount: amount_foo}], 
+          credits: [{account: 'Loan', amount: amount_foo, context: @po, subcontext: @item_foo}])
       Entry.create!(
-          description: 'Foobar5',
-          debits:  [{account: 'Cash', amount: 123}], 
-          credits: [{account: 'Loan', amount: 123, context: @po, subcontext: @item_foo}])
-      Entry.create!(
-          description: 'Foobar6',
-          debits:  [{account: 'Cash', amount: 222}], 
-          credits: [{account: 'Loan', amount: 222, context: @po, subcontext: @item_foo}])
-      Entry.create!(
-          description: 'Foobar7',
-          debits:  [{account: 'Cash', amount: 1}], 
-          credits: [{account: 'Loan', amount: 1, context: @po, subcontext: @item_bar}])
-      expect(@loan.credits_balance({context: @po, subcontext: @item_foo})).to eq(123 + 222)
-      expect(@loan.credits_balance({context: @po, subcontext: @item_bar})).to eq(1)
+          description: 'Amount for subcontext bar with context PO',
+          debits:  [{account: 'Cash', amount: amount_bar}], 
+          credits: [{account: 'Loan', amount: amount_bar, context: @po, subcontext: @item_bar}])
+      expect(@loan.credits_balance({context: @po, subcontext: @item_foo})).to eq(amount_foo)
+      expect(@loan.credits_balance({context: @po, subcontext: @item_bar})).to eq(amount_bar)
+      expect(@loan.credits_balance({subcontext: @item_foo})).to eq(amount_foo * 2)
       expect(Account.trial_balance).to eq(0)
     end
   end

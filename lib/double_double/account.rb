@@ -47,7 +47,7 @@ module DoubleDouble
       # @return [Money] The value balance of all accounts
       def trial_balance
         raise(NoMethodError, "undefined method 'trial_balance'") unless self == DoubleDouble::Account
-        Asset.balance - (Liability.balance + Equity.balance + Revenue.balance - Expense.balance)
+        Asset.balance - Liability.balance + Equity.balance + Revenue.balance - Expense.balance
       end
       
       def balance
