@@ -54,9 +54,9 @@ module DoubleDouble
     def self.build args
       args.merge!({credits: args[:debits], debits: args[:credits]}) if args[:reversed]
       Entry.new().tap do |entry|
-        entry.description = args.fetch(:description, '')
-        entry.entry_type  = args.fetch(:entry_type, nil)
-        entry.initiator   = args.fetch(:initiator,  nil)
+        entry.description = args.fetch(:description, nil)
+        entry.entry_type  = args.fetch(:entry_type,  nil)
+        entry.initiator   = args.fetch(:initiator,   nil)
         
         add_amounts_to_entry(args[:debits],  entry, true)
         add_amounts_to_entry(args[:credits], entry, false)
