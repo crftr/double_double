@@ -62,6 +62,14 @@ module DoubleDouble
       def numbered account_number
         self.where(number: account_number.to_i).first
       end
+
+      def named_or_numbered identifier
+        if identifier.is_a?(Integer)
+          numbered identifier
+        else
+          named identifier
+        end
+      end
     end
 
     def credits_balance(hash = {})

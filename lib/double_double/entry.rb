@@ -97,9 +97,10 @@ module DoubleDouble
 
       def self.add_amounts_to_entry amounts, entry, add_to_debits = true
         return if amounts.nil?
-        amount_ledger = add_to_debits ? :debit_amounts : :credit_amounts
-        amount_class  = add_to_debits ? DebitAmount : CreditAmount
-        add_amount_to_entry = ->(new_amount) { entry.send(amount_ledger) << new_amount }
+
+        ledger_side, amount_class = ledger_side_and_Amount_class(add_to_debits)
+
+        add_amount_to_entry = ->(new_amount) { entry.send(ledger_side) << new_amount }
         generate_amount_obj = ->() { amount_class.new }
 
         amounts.each do |amt|
@@ -110,9 +111,16 @@ module DoubleDouble
         end
       end
 
+      def self.ledger_side_and_Amount_class is_debit
+        if is_debit
+          [:debit_amounts, DebitAmount]
+        else
+          [:credit_amounts, CreditAmount]
+        end
+      end
+
       def self.prepare_amount_parameters args
-        account = args[:account].is_a?(Integer) ? Account.numbered(args[:account]) : Account.named(args[:account])
-        { account:    account,
+        { account:    Account.named_or_numbered(args[:account]),
           entry:      args[:entry],
           amount:     args[:amount],
           accountee:  args.fetch(:accountee,  nil),

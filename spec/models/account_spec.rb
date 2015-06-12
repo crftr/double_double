@@ -23,32 +23,54 @@ module DoubleDouble
       expect {Account.balance}.to raise_error(NoMethodError)
     end
 
-    it "should have a trial balance" do
-      expect(Account).to respond_to(:trial_balance)
-      expect(Account.trial_balance).to be_kind_of(Money)
+    describe ".trial_balance" do
+      it "should have a trial balance" do
+        expect(Account).to respond_to(:trial_balance)
+        expect(Account.trial_balance).to be_kind_of(Money)
+      end
+
+      it "should report a trial balance of 0 after an entry is recorded" do
+        FactoryGirl.create(:liability, name: 'liability acct')
+        FactoryGirl.create(:asset,     name: 'asset acct')
+        expect {
+          Entry.create!(
+            description: 'Entry for trial balance test',
+            debits:  [{account: 'liability acct', amount: 123_456}],
+            credits: [{account: 'asset acct',     amount: 123_456}])
+        }.to change(Account, :trial_balance).by(0)
+      end
     end
 
-    it "should report a trial balance of 0 after an entry is recorded" do
-      FactoryGirl.create(:liability, name: 'liability acct')
-      FactoryGirl.create(:asset,     name: 'asset acct')
-      expect {
-        Entry.create!(
-          description: 'Entry for trial balance test',
-          debits:  [{account: 'liability acct', amount: 123_456}],
-          credits: [{account: 'asset acct',     amount: 123_456}])
-      }.to change(Account, :trial_balance).by(0)
+    describe ".named" do
+      let(:account_name) { 'big bucks' }
+
+      it "should return the specified account with the same name" do
+        named_account = FactoryGirl.create(:asset, name: account_name)
+        expect(Account.named(account_name)).to eq(named_account)
+      end
     end
 
-    it "should return the specified account when calling .named" do
-      acct_name = 'named'
-      named_account = FactoryGirl.create(:liability, name: acct_name)
-      expect(Account.named(acct_name)).to eq(named_account)
+    describe ".numbered" do
+      let(:account_number) { 800 }
+
+      it "should return the specified account with the same number" do
+        numbered_account = FactoryGirl.create(:liability, name: 'numbered', number: account_number)
+        expect(Account.numbered(account_number)).to eq(numbered_account)
+      end
     end
 
-    it "should return the specified account when calling .numbered" do
-      acct_number = 800
-      numbered_account = FactoryGirl.create(:liability, name: 'numbered', number: acct_number)
-      expect(Account.numbered(acct_number)).to eq(numbered_account)
+    describe ".named_or_numbered" do
+      let!(:account_number) { 888 }
+      let!(:account_name) { 'Cash on hand' }
+      let!(:account) { FactoryGirl.create(:asset, name: account_name, number: account_number) }
+
+      it "should return an account if given a number" do
+        expect(Account.named_or_numbered(account_number)).to eq(account)
+      end
+
+      it "should return an account if given a string" do
+        expect(Account.named_or_numbered(account_name)).to eq(account)
+      end
     end
   end
 end
