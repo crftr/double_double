@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/crftr/double_double.png)](https://travis-ci.org/crftr/double_double)
 [![Code Climate](https://codeclimate.com/github/crftr/double_double/badges/gpa.svg)](https://codeclimate.com/github/crftr/double_double)
 
-A double-entry accrual accounting system for your application. Currency-agnostic but uses the Money gem. Account holder support and contexts are built-in.
+A double-entry accrual accounting system for your Rails application. Currency-agnostic but uses the Money gem. Account holder support and contexts are built-in.
 
 ## Installation
 
@@ -20,67 +20,13 @@ Or install it yourself as:
 
     $ gem install double_double
 
-### Database structure
+### Setup
 
-Create the expected database structure.  If using Rails, generate a migration:
+Generate and migrate the installation database migration
 
-    $ rails generate migration CreateDoubleDouble
-
-Edit the migration to match:
-
-```ruby
-class CreateDoubleDouble < ActiveRecord::Migration
-  def change
-    create_table :double_double_accounts do |t|
-      t.integer :number,        null: false
-      t.string  :name,          null: false
-      t.string  :type,          null: false
-      t.boolean :contra,        default: false
-    end
-    add_index :double_double_accounts, [:name, :type]
-
-    create_table :double_double_entries do |t|
-      t.string :description
-      t.references :initiator,        polymorphic: true
-      t.references :entry_type
-      t.timestamps
-    end
-    add_index :double_double_entries, :initiator_id
-    add_index :double_double_entries, :initiator_type
-    add_index :double_double_entries, :entry_type_id
-
-    create_table :double_double_entry_types do |t|
-      t.string :description,    null: false
-    end
-    add_index :double_double_entry_types, :description
-
-    create_table :double_double_amounts do |t|
-      t.string :type
-      t.references :account
-      t.references :entry
-      t.references :context,    polymorphic: true
-      t.references :subcontext, polymorphic: true
-      t.references :accountee,  polymorphic: true
-      
-      t.integer :amount_cents, limit: 8, default: 0, null: false
-      t.string  :currency
-    end
-    add_index :double_double_amounts, :context_id
-    add_index :double_double_amounts, :context_type
-    add_index :double_double_amounts, :subcontext_id
-    add_index :double_double_amounts, :subcontext_type
-    add_index :double_double_amounts, :accountee_id
-    add_index :double_double_amounts, :accountee_type
-    add_index :double_double_amounts, :type
-    add_index :double_double_amounts, [:account_id, :entry_id]
-    add_index :double_double_amounts, [:entry_id, :account_id]
-  end
-end
-```
-
-Rake the new migration
-
+    $ rails generate double_double:install
     $ rake db:migrate
+
 
 ## Overview
 

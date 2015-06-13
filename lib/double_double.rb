@@ -24,4 +24,4 @@ require 'double_double/entry'
 require 'double_double/entry_type'
 
 # Generators
-require 'generators/double_double/install_generator'
+require 'generators/double_double/install/install_generator'
