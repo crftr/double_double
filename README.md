@@ -80,7 +80,7 @@ See the [double_double wiki][4]
 
 ## Tests
 
-All code is backed by Rspec tests.  Clone this repository and either `rspec spec` or `rake spec` if Rake is installed.
+All code is backed by Rspec tests.  Clone this repository and `rake spec` to execute the tests.
 
 ## Contributing
 
