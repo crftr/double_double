@@ -38,13 +38,5 @@ shared_examples "it can run the README scenarios" do
       # How much cash do we have left?
       expect(DoubleDouble::Account.named('Cash').balance.to_s).to eq("0.00")
     end
-
-    xit 'should perform the REALISTIC SCENARIO correctly' do
-      pending "TODO"
-    end
-
-    xit 'should perform the COMPLEX SCENARIO correctly' do
-      pending "TODO"
-    end
   end
 end
