@@ -9,12 +9,8 @@ module DoubleDouble
       desc "Add the migrations for DoubleDouble"
 
       def self.next_migration_number(path)
-        unless @prev_migration_nr
-          @prev_migration_nr = Time.now.utc.strftime("%Y%m%d%H%M%S").to_i
-        else
-          @prev_migration_nr += 1
-        end
-        @prev_migration_nr.to_s
+        next_migration_number = current_migration_number(path) + 1
+        ActiveRecord::Migration.next_migration_number(next_migration_number)
       end
 
       def copy_migrations
